@@ -28,7 +28,7 @@ def sha256_file(path: str) -> str:
     return h.hexdigest()
 
 
-def post_log(blob: dict, attempts: int = 20) -> dict:
+def post_log(blob: dict, attempts: int = 60) -> dict:
     body = json.dumps(blob).encode("utf-8")
     url = WITNESS_URL + "/log"
     last_err = None

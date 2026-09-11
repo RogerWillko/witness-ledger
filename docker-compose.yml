@@ -6,12 +6,19 @@ services:
     working_dir: /app
     volumes:
       - ./witness.py:/app/witness.py:ro
+      - ./requirements.txt:/app/requirements.txt:ro
       - witness-data:/data
     environment:
       WITNESS_DB: /data/chain.db
-    command: ["sh", "-c", "pip install -q fastapi uvicorn && python witness.py serve"]
+    command: ["sh", "-c", "pip install -q -r requirements.txt && python witness.py serve"]
     ports:
       - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1', 8000), 2).close()"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+      start_period: 25s
     restart: unless-stopped
 
   model:
@@ -23,7 +30,8 @@ services:
       WITNESS_URL: http://witness:8000
     command: ["python", "model_side.py", "demo"]
     depends_on:
-      - witness
+      witness:
+        condition: service_healthy
     restart: "no"
 
 volumes:
