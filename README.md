@@ -1,8 +1,10 @@
 # Witness Ledger
 
-A one-way pipe for model weights: the model can log a change, but it cannot read the chain.
+A one-way pipe for model weights: a process limited to `POST /log` can append, not rewrite.
 
-`POST /log` hashes `{type, payload, timestamp}` and appends it to a local SQLite hash chain (`entry_hash` + previous `chain_hash`). The witness only ever answers **received** or **rejected**. There is no endpoint that returns chain data. If anyone tampers with an old row, the chain breaks.
+The ledger is a local SQLite hash chain. Each `POST /log` stores a canonical JSON blob, an `entry_hash` of that blob, and a `chain_hash` of `previous_head + entry_hash`. `verify` recomputes those links. If someone edits an old payload and leaves the stored hashes alone, the chain breaks. That part is real, and it is the demo the `tamper` command is built to show.
+
+The model side cannot fetch the chain over HTTP. There is only `POST /log`. Success returns `received` plus the new head hash; everything else is `rejected`. So a process limited to that API can append, not rewrite.
 
 MIT licensed. Python 3.9+.
 
@@ -54,6 +56,14 @@ python3 witness.py verify          # CHAIN BROKEN
 ```
 
 `GET /chain`, `GET /docs`, and `GET /log` are all rejected. The ledger lives only in `chain.db` on the witness machine.
+
+## Where the claim stops
+
+This is tamper-evident against naive edits, not tamper-proof against whoever controls the witness machine or `chain.db`. Anyone who can rewrite the database can recompute a consistent chain. The “model can’t reach the chain” rule is an operational split (separate process, container, or host), not a cryptographic lock on a self-modifying model. `model_side.py` is a script that hashes a fake `weights.bin` and POSTs the digest. It is not a sandboxed weight-updating network.
+
+Other limits sit outside the hash math: `/log` has no authentication, the timestamp is client-supplied, and the service binds to `0.0.0.0:8000` by default. Those are trust-boundary issues, not breaks of SHA-256.
+
+So: the hash chain does what a hash chain does. It does not, by itself, stop a model that shares a filesystem with the witness, or an operator who can rebuild the database. If the intended attacker is only allowed to call `POST /log`, history stays append-only. If the attacker can touch the witness store, the chain can be made consistent again, and `verify` will say it is intact.
 
 ## Docker (two containers, no shared volume)
 
