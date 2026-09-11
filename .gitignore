@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+chain.db
+chain.db-shm
+chain.db-wal
+weights.bin
+deployed/
+.DS_Store
