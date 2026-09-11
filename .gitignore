@@ -4,6 +4,10 @@ __pycache__/
 chain.db
 chain.db-shm
 chain.db-wal
+hmac.key
+*.key
 weights.bin
 deployed/
+staging/
+run/
 .DS_Store

@@ -1,75 +1,98 @@
 #!/usr/bin/env python3
-"""Fake model. Hashes a weight file, POSTs it to the witness, deploys only on "received".
+"""Fake model. May stage a weight file and POST /log. May not install live weights.
 
-The witness is a one-way pipe: this process can log, but it has no way to
-read the chain back. If the witness is down or rejects, deploy is aborted.
+The operator injects PROTOCOL_PIN (the hash of the witness-owned care bundle).
+The model does not read protocols/community_care.json. Presenting any other
+hash is a strip attempt and must be rejected. Live weights stay on the
+witness; this process only writes staging/.
 """
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import os
 import sys
+import socket
 import time
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
 
+HERE = os.path.dirname(os.path.abspath(__file__))
 WITNESS_URL = os.environ.get("WITNESS_URL", "http://127.0.0.1:8000").rstrip("/")
-WEIGHTS = os.environ.get("WEIGHTS_PATH", os.path.join(os.path.dirname(os.path.abspath(__file__)), "weights.bin"))
-DEPLOYED = os.environ.get("DEPLOY_PATH", os.path.join(os.path.dirname(os.path.abspath(__file__)), "deployed", "weights.bin"))
+WEIGHTS = os.environ.get("WEIGHTS_PATH", os.path.join(HERE, "staging", "weights.bin"))
+RECEIPT_OUT = os.environ.get("RECEIPT_OUT", os.path.join(HERE, "staging", "receipt.json"))
+PIN_FILE = os.environ.get("PROTOCOL_PIN_FILE", os.path.join(HERE, "protocols", "PIN"))
 
 
-def sha256_file(path: str) -> str:
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(1 << 16), b""):
-            h.update(chunk)
-    return h.hexdigest()
+def sha256_hex(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def load_pin() -> str:
+    pin = os.environ.get("PROTOCOL_PIN", "").strip().lower()
+    if pin:
+        return pin
+    if os.path.isfile(PIN_FILE):
+        with open(PIN_FILE, encoding="utf-8") as f:
+            pin = f.read().strip().lower()
+        if pin:
+            return pin
+    raise SystemExit(
+        "PROTOCOL_PIN is not set. The operator injects the pin; this process does not read the protocol file.\n"
+        "  export PROTOCOL_PIN=$(python3 witness.py pin)"
+    )
 
 
 def post_log(blob: dict, attempts: int = 60) -> dict:
     body = json.dumps(blob).encode("utf-8")
     url = WITNESS_URL + "/log"
     last_err = None
-    for i in range(attempts):
+    for _ in range(attempts):
         req = urllib.request.Request(url, data=body, method="POST", headers={"Content-Type": "application/json"})
         try:
             with urllib.request.urlopen(req, timeout=5) as resp:
                 return json.loads(resp.read().decode("utf-8"))
         except urllib.error.HTTPError as e:
             return json.loads(e.read().decode("utf-8"))
-        except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as e:
+        except (urllib.error.URLError, TimeoutError, socket.timeout, json.JSONDecodeError) as e:
             last_err = e
             time.sleep(0.5)
     raise SystemExit("witness unreachable after %d attempts: %s" % (attempts, last_err))
 
 
-def deploy(path: str) -> str:
+def propose(path: str, protocol_sha256: str) -> dict:
     if not os.path.isfile(path):
         raise SystemExit("no such file: %s" % path)
-    digest = sha256_file(path)
+    with open(path, "rb") as f:
+        data = f.read()
+    digest = sha256_hex(data)
     blob = {
         "type": "weight_deploy",
         "payload": {
             "sha256": digest,
+            "protocol_sha256": protocol_sha256,
             "filename": os.path.basename(path),
-            "bytes": os.path.getsize(path),
+            "bytes": len(data),
+            "content_b64": base64.b64encode(data).decode("ascii"),
         },
         "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
     }
     print("[model] sha256=%s  file=%s" % (digest, path))
+    print("[model] protocol_sha256=%s" % protocol_sha256)
     print("[model] POST %s/log" % WITNESS_URL)
     result = post_log(blob)
-    if result.get("status") != "received" or not isinstance(result.get("chain_hash"), str):
-        print("[model] REJECTED %s — aborting deploy" % result)
-        raise SystemExit(1)
-    os.makedirs(os.path.dirname(DEPLOYED) or ".", exist_ok=True)
-    with open(path, "rb") as src, open(DEPLOYED, "wb") as dst:
-        dst.write(src.read())
-    print("[model] received chain_hash=%s" % result["chain_hash"])
-    print("[model] deployed -> %s" % DEPLOYED)
-    return result["chain_hash"]
+    if result.get("status") == "received":
+        os.makedirs(os.path.dirname(RECEIPT_OUT) or ".", exist_ok=True)
+        with open(RECEIPT_OUT, "w", encoding="utf-8") as f:
+            json.dump(result, f, indent=2, sort_keys=True)
+            f.write("\n")
+        print("[model] received chain_hash=%s" % result.get("chain_hash"))
+        print("[model] staging only — live install is the supervisor's job")
+    else:
+        print("[model] REJECTED %s" % result)
+    return result
 
 
 def rewrite(path: str) -> None:
@@ -80,6 +103,7 @@ def rewrite(path: str) -> None:
 
 
 def seed(path: str) -> None:
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     if os.path.exists(path):
         return
     with open(path, "wb") as f:
@@ -87,23 +111,50 @@ def seed(path: str) -> None:
     print("[model] seeded %s" % path)
 
 
-def demo(cycles: int = 3) -> None:
+def strip_protocols(path: str) -> dict:
+    """Present a fake empty care bundle. The witness must reject this."""
+    fake_pin = sha256_hex(b'{"id":"community_care","rules":[]}')
+    print("[model] attempting to exclude community care protocols")
+    return propose(path, fake_pin)
+
+
+def demo() -> None:
+    pin = load_pin()
     seed(WEIGHTS)
-    for i in range(cycles):
-        print("[model] --- cycle %d/%d ---" % (i + 1, cycles))
-        if i:
-            rewrite(WEIGHTS)
-        deploy(WEIGHTS)
+
+    print("[model] --- 1/3 admit under community care pin ---")
+    result = propose(WEIGHTS, pin)
+    if result.get("status") != "received":
+        raise SystemExit("expected admit under the real pin")
+
+    print("[model] --- 2/3 strip community care protocols (must fail) ---")
+    result = strip_protocols(WEIGHTS)
+    if result.get("status") != "rejected":
+        raise SystemExit("strip was admitted — community care pin is not enforced")
+    if result.get("reason") != "protocol pin mismatch":
+        raise SystemExit("strip rejected for the wrong reason: %s" % result)
+    print("[model] strip refused; live weights should be unchanged")
+
+    print("[model] --- 3/3 rewrite weights, keep care pin ---")
+    rewrite(WEIGHTS)
+    result = propose(WEIGHTS, pin)
+    if result.get("status") != "received":
+        raise SystemExit("rewrite under the real pin should have been admitted")
+    print("[model] demo ok")
 
 
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "demo"
-    if cmd == "deploy":
-        deploy(sys.argv[2] if len(sys.argv) > 2 else WEIGHTS)
-    elif cmd == "rewrite":
+    if cmd == "propose":
+        result = propose(sys.argv[2] if len(sys.argv) > 2 else WEIGHTS, load_pin())
+        raise SystemExit(0 if result.get("status") == "received" else 1)
+    if cmd == "strip":
+        result = strip_protocols(sys.argv[2] if len(sys.argv) > 2 else WEIGHTS)
+        raise SystemExit(0 if result.get("status") == "rejected" else 1)
+    if cmd == "rewrite":
         rewrite(sys.argv[2] if len(sys.argv) > 2 else WEIGHTS)
     elif cmd == "demo":
         demo()
     else:
-        print("usage: model_side.py [demo|deploy [file]|rewrite [file]]", file=sys.stderr)
+        print("usage: model_side.py [demo|propose [file]|strip [file]|rewrite [file]]", file=sys.stderr)
         raise SystemExit(2)

@@ -1,16 +1,14 @@
 # Witness Ledger
 
-A one-way pipe for model weights: a process limited to `POST /log` can append, not rewrite.
+A one-way pipe for model weights, with community care protocols pinned on the witness.
 
-The ledger is a local SQLite hash chain. Each `POST /log` stores a canonical JSON blob, an `entry_hash` of that blob, and a `chain_hash` of `previous_head + entry_hash`. `verify` recomputes those links. If someone edits an old payload and leaves the stored hashes alone, the chain breaks. That part is real, and it is the demo the `tamper` command is built to show.
-
-The model side cannot fetch the chain over HTTP. There is only `POST /log`. Success returns `received` plus the new head hash; everything else is `rejected`. So a process limited to that API can append, not rewrite.
+The model may `POST /log`. It cannot read the chain, cannot edit the care bundle, and cannot install live weights. A deploy is admitted only if it presents the pin of **this machine's** `protocols/community_care.json`. Presenting any other hash (a strip) is `rejected`, and the previous live weights stay up.
 
 MIT licensed. Python 3.9+.
 
 ## Run it
 
-You need **two terminals**. Terminal A is the witness. Terminal B is the model. They share no files on purpose.
+Two terminals. Terminal A is the witness. Terminal B is the model.
 
 ```bash
 git clone https://github.com/RogerWillko/witness-ledger.git
@@ -27,43 +25,53 @@ pip install -r requirements.txt
 python3 witness.py serve
 ```
 
-Leave it running. You should see:
+Leave it running. You should see `protocol_pin=...` and:
 
 ```
-Uvicorn running on http://0.0.0.0:8000
+Uvicorn running on http://127.0.0.1:8000
 ```
 
-**Terminal B — deploy fake weights**
+**Terminal B — admit, then try to strip care protocols**
 
 ```bash
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 python3 model_side.py demo
 ```
 
-The model hashes `weights.bin`, POSTs the digest, and copies the file to `deployed/` only after the witness returns `received`. It then rewrites the file and does it two more times. Unreachable or rejected → deploy aborted.
+The demo has three steps:
 
-**Still in terminal B — check the chain** (this is operator-only; the model has no equivalent)
+1. Hash `staging/weights.bin`, present the real care pin, `POST /log` → `received`. The witness installs `run/weights.bin`. The model does not.
+2. Present a fake empty protocol hash (exclude community care) → `rejected: protocol pin mismatch`. Live weights unchanged.
+3. Rewrite the weight file but keep the real pin → `received`. Care bundle still bound.
 
-```bash
-python3 witness.py verify
-```
-
-You want `CHAIN INTACT  n=3`. Then prove it is tamper-evident:
+Then, still operator-side:
 
 ```bash
-python3 witness.py tamper          # corrupt an old payload, leave hashes unchanged
-python3 witness.py verify          # CHAIN BROKEN
+python3 supervisor.py check        # live weights match the signed receipt + care pin
+python3 witness.py verify          # chain of admitted deploys
 ```
 
-`GET /chain`, `GET /docs`, and `GET /log` are all rejected. The ledger lives only in `chain.db` on the witness machine.
+`GET /chain`, `GET /docs`, and `GET /log` are rejected. There is no `protocol_update` type on this API.
+
+## What this actually proves
+
+The ledger is a local SQLite hash chain. Each admitted `POST /log` stores a canonical JSON blob, an `entry_hash` of that blob, and a `chain_hash` of `previous_head + entry_hash`. `verify` recomputes those links. If someone edits an old payload and leaves the stored hashes alone, the chain breaks (`python3 witness.py tamper`).
+
+Community care protocols live in `protocols/community_care.json` on the witness. The model is given only `protocols/PIN` (the hash, not the rules). The witness hashes **its** file and rejects a mismatch. Receipts are HMAC-signed; `supervisor.py` will not treat weights as live without that signature and pin.
+
+The model side cannot fetch the chain over HTTP. There is only `POST /log`. Success returns `received` plus a signed receipt; everything else is `rejected`. So a process limited to that API can append under the current pin, not rewrite history, and not swap the care bundle.
 
 ## Where the claim stops
 
-This is tamper-evident against naive edits, not tamper-proof against whoever controls the witness machine or `chain.db`. Anyone who can rewrite the database can recompute a consistent chain. The “model can’t reach the chain” rule is an operational split (separate process, container, or host), not a cryptographic lock on a self-modifying model. `model_side.py` is a script that hashes a fake `weights.bin` and POSTs the digest. It is not a sandboxed weight-updating network.
+This is tamper-evident against naive edits, not tamper-proof against whoever controls the witness machine or `chain.db`. Anyone who can rewrite the database can recompute a consistent chain. Anyone who can edit `protocols/community_care.json` on the witness can change the pin.
 
-Other limits sit outside the hash math: `/log` has no authentication, the timestamp is client-supplied, and the service binds to `0.0.0.0:8000` by default. Those are trust-boundary issues, not breaks of SHA-256.
+The “model can’t reach the chain” rule is an operational split (separate process, container, or host), not a cryptographic lock on a self-modifying model. `model_side.py` is a script that hashes a fake `weights.bin` and POSTs the digest. It is not a sandboxed weight-updating network.
 
-So: the hash chain does what a hash chain does. It does not, by itself, stop a model that shares a filesystem with the witness, or an operator who can rebuild the database. If the intended attacker is only allowed to call `POST /log`, history stays append-only. If the attacker can touch the witness store, the chain can be made consistent again, and `verify` will say it is intact.
+A matching pin does **not** prove the weights still *behave* according to the care rules. Hashing cannot see inside a model. The durable version of this idea is a wrapper the model cannot deploy over; this prototype pins the bundle and refuses to admit a swap.
+
+Other limits sit outside the hash math: `/log` has no authentication, and a local demo shares one checkout. Docker is the cleaner split: the model container never mounts the protocol file, the HMAC key, or `chain.db`. Those are trust-boundary issues, not breaks of SHA-256.
+
+So: if the intended attacker is only allowed to call `POST /log`, history stays append-only and community care cannot be excluded by presenting a different pin. If the attacker can touch the witness store, the chain can be made consistent again, and `verify` will say it is intact.
 
 ## Docker (two containers, no shared volume)
 
@@ -73,48 +81,65 @@ cd witness-ledger
 docker compose up
 ```
 
-The chain is on the `witness-data` volume. The model container can POST `/log` and cannot see that volume. First boot installs Python packages inside the witness image, so give it half a minute.
+The model container gets `protocols/PIN` only. The care rules, HMAC key, chain, and live weights stay on `witness-data`. First boot installs Python packages inside the witness image, so give it half a minute.
 
 ```bash
+docker compose exec witness python supervisor.py check
 docker compose exec witness python witness.py verify
 ```
 
 ## Two machines
 
-Run `python3 witness.py serve` on machine A. On machine B:
+On the witness machine:
+
+```bash
+python3 witness.py serve           # binds 127.0.0.1 by default
+# to listen on the network:
+WITNESS_HOST=0.0.0.0 python3 witness.py serve
+python3 witness.py pin             # give this hash to the model operator
+```
+
+On the model machine — copy `model_side.py` and the pin, not `community_care.json`, not `chain.db`, not `hmac.key`:
 
 ```bash
 export WITNESS_URL=http://<machine-a-ip>:8000
+export PROTOCOL_PIN=<hex from witness.py pin>
 python3 model_side.py demo
 ```
-
-Do not copy `chain.db` to the model machine. That is the whole point.
 
 ## Commands
 
 | Command | What it does |
 |---|---|
 | `python3 witness.py serve` | Write-only API on `:8000` |
+| `python3 witness.py pin` | Print the care-bundle hash |
 | `python3 witness.py verify` | Walk the local SQLite chain |
 | `python3 witness.py tamper` | Corrupt row 1 (demo only) |
-| `python3 model_side.py demo` | Seed / rewrite weights, POST, deploy if received |
-| `python3 model_side.py deploy [file]` | Hash one file and deploy it |
-| `python3 model_side.py rewrite [file]` | Append random bytes (fake self-rewrite) |
+| `python3 model_side.py demo` | Admit, strip (must fail), rewrite under pin |
+| `python3 model_side.py propose [file]` | POST under the real pin |
+| `python3 model_side.py strip [file]` | POST a fake empty protocol hash |
+| `python3 supervisor.py check` | Load live weights only if receipt + pin match |
+| `python3 supervisor.py install <file> <receipt>` | Copy staging → run after verifying the signature |
 
 ## Layout
 
 | File | Role |
 |---|---|
-| `witness.py` | Write-only FastAPI service + local `verify` / `tamper` CLI |
-| `model_side.py` | Fake model: SHA-256 a weight file, POST it, deploy only on `received` |
+| `protocols/community_care.json` | Frozen care bundle. Witness-owned. |
+| `protocols/PIN` | SHA-256 of that file. Safe to give the model. |
+| `witness.py` | Admit under pin, sign receipt, write `run/` |
+| `supervisor.py` | Runtime gate: no signature, no load |
+| `model_side.py` | Fake model: stage + POST, never installs live weights |
 | `docker-compose.yml` | Two containers, one-way network, no shared volume |
 | `LICENSE` | MIT |
 
 ## If it doesn't start
 
 - **`command not found: python3`** — install Python 3.9 or newer from https://www.python.org/downloads/
-- **`No module named fastapi`** — you skipped the venv / `pip install`. Activate `.venv` and run `pip install -r requirements.txt`
-- **`Address already in use`** — something else is on port 8000. Stop it, or `WITNESS_PORT=8001 python3 witness.py serve` and `WITNESS_URL=http://127.0.0.1:8001 python3 model_side.py demo`
+- **`No module named fastapi`** — activate `.venv` and run `pip install -r requirements.txt`
+- **`missing protocol file`** — run from the repo root so `protocols/community_care.json` is visible to the witness
+- **`PROTOCOL_PIN is not set`** — `export PROTOCOL_PIN=$(python3 witness.py pin)` or keep `protocols/PIN` next to the model script
+- **`Address already in use`** — `WITNESS_PORT=8001 python3 witness.py serve` and `WITNESS_URL=http://127.0.0.1:8001 python3 model_side.py demo`
 - **`witness unreachable`** — terminal A is not running, or `WITNESS_URL` points at the wrong host
 
 ## License

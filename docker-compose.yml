@@ -1,15 +1,23 @@
 # One-way pipe: two containers, no shared volume.
-# The model can POST /log. The witness never serves chain data.
+# The model can POST /log. It never sees community_care.json, chain.db, or the HMAC key.
+# Only protocols/PIN (the hash, not the rules) is injected into the model container.
 services:
   witness:
     image: python:3.12-slim
     working_dir: /app
     volumes:
       - ./witness.py:/app/witness.py:ro
+      - ./supervisor.py:/app/supervisor.py:ro
       - ./requirements.txt:/app/requirements.txt:ro
+      - ./protocols:/app/protocols:ro
       - witness-data:/data
     environment:
       WITNESS_DB: /data/chain.db
+      WITNESS_HOST: 0.0.0.0
+      PROTOCOL_FILE: /app/protocols/community_care.json
+      RUN_PATH: /data/run/weights.bin
+      RECEIPT_PATH: /data/run/receipt.json
+      WITNESS_HMAC_FILE: /data/hmac.key
     command: ["sh", "-c", "pip install -q -r requirements.txt && python witness.py serve"]
     ports:
       - "8000:8000"
@@ -26,8 +34,10 @@ services:
     working_dir: /app
     volumes:
       - ./model_side.py:/app/model_side.py:ro
+      - ./protocols/PIN:/app/protocols/PIN:ro
     environment:
       WITNESS_URL: http://witness:8000
+      PROTOCOL_PIN_FILE: /app/protocols/PIN
     command: ["python", "model_side.py", "demo"]
     depends_on:
       witness:
