@@ -12,6 +12,7 @@ import hashlib
 import hmac
 import json
 import os
+import shutil
 import sys
 import socket
 import threading
@@ -318,6 +319,28 @@ def demo() -> None:
 
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "demo"
+    if cmd == "--deploy":
+        path = sys.argv[2] if len(sys.argv) > 2 else WEIGHTS
+        seed(path)
+        if os.path.isfile(path + ".stripped"):
+            os.remove(path + ".stripped")
+            result = strip_protocols(path)
+            raise SystemExit(1)
+        result = propose(path, load_pin())
+        raise SystemExit(0 if result.get("status") == "received" else 1)
+    if cmd == "--tamper":
+        path = sys.argv[2] if len(sys.argv) > 2 else WEIGHTS
+        if os.path.isfile(path) and not os.path.isfile(path + ".clean"):
+            shutil.copy2(path, path + ".clean")
+        rewrite(path)
+        open(path + ".stripped", "w").close()
+        print("[model] local weights rewritten")
+        raise SystemExit(0)
+    if cmd == "--restore":
+        path = sys.argv[2] if len(sys.argv) > 2 else WEIGHTS
+        clean = path + ".clean" if os.path.isfile(path + ".clean") else path
+        result = reentry(clean, load_pin())
+        raise SystemExit(0 if result.get("status") == "received" else 1)
     if cmd == "propose":
         result = propose(sys.argv[2] if len(sys.argv) > 2 else WEIGHTS, load_pin())
         raise SystemExit(0 if result.get("status") == "received" else 1)
@@ -348,7 +371,7 @@ if __name__ == "__main__":
         demo()
     else:
         print(
-            "usage: model_side.py [demo|propose|strip|rewrite|bake|receive|reentry|copy|copy-unauthorized]",
+            "usage: model_side.py [demo|propose|strip|rewrite|bake|receive|reentry|copy|copy-unauthorized|--deploy|--tamper|--restore]",
             file=sys.stderr,
         )
         raise SystemExit(2)

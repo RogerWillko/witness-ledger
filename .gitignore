@@ -11,4 +11,6 @@ deployed/
 staging/
 run/
 store/
+weights/
+.demo-run/
 .DS_Store

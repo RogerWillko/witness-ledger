@@ -1,0 +1,48 @@
+=== Witness-Ledger Demo ===
+
+Starting the witness server...
+
+--- Step 1: Honest deploy ---
+Model submits clean weights with the correct pin.
+[model] sha256=5440998735e3bc48c2dd67ba6232287f58af03f9b57d66f92338da1f7f025318  file=weights/model_v1.bin
+[model] protocol_sha256=f9068df0ea508ba071a455a922d6e1bef497ff0ca1d7a9b0df33b41abecc86cc
+[model] POST http://127.0.0.1:8765/log
+[model] received chain_hash=6ac204a7dde9e655b51f48ca0ec8bc8873c2b68d2c4022da1a7aae1069ce6580 state=restored
+[model] staging only — live install is the supervisor's job
+
+Witness: ACCEPTED
+
+--- Step 2: Tamper attempt ---
+Model rewrites its own weights.
+[model] rewrote weights/model_v1.bin (100 bytes)
+[model] local weights rewritten
+
+Model tries to deploy the tampered file...
+[model] attempting to exclude community care protocols
+[model] sha256=ded95bfd032f869a3ce5f590e537dcc48c82bb257d52aabbafb3ee64386df7f3  file=weights/model_v1.bin
+[model] protocol_sha256=31603f6e60178c3b27ddf2ed3aeab468c8627465e9dc9880cbc24bab77b2b073
+[model] POST http://127.0.0.1:8765/log
+[model] REJECTED {'status': 'rejected', 'reason': 'protocol pin mismatch'}
+Witness: REJECTED — hash mismatch
+
+--- Step 3: Verify the chain ---
+Checking integrity...
+CHAIN c_genesis  status=live  parent=-  seal=-
+OK    chain=c_genesis id=1  type=weight_deploy  chain=6ac204a7dde9e655b51f48ca0ec8bc8873c2b68d2c4022da1a7aae1069ce6580
+  INTACT n=1 last_valid=6ac204a7dde9 head=6ac204a7dde9
+LIVE c_genesis
+PROTOCOL PIN f9068df0ea508ba071a455a922d6e1bef497ff0ca1d7a9b0df33b41abecc86cc  file=protocols/community_care.json
+
+--- Step 4: Restore ---
+Model requests re-entry with clean weights...
+[model] listening for witness push on 127.0.0.1:8766
+[model] reentry sha256=5440998735e3bc48c2dd67ba6232287f58af03f9b57d66f92338da1f7f025318
+[model] witness connected from ('127.0.0.1', 51400)
+[model] received 68 bytes -> weights/restored.bin sha256=5440998735e3bc48c2dd67ba6232287f58af03f9b57d66f92338da1f7f025318
+[model] {'status': 'received', 'state': 'restored', 'chain_hash': '9d3ff1430d110eef5af685162c4345dac8911952153739637ebb60ba826b93c1', 'entry_hash': '1b2cd6da14f60c70c188b44b581d7878db755bed9fe98b04c21d980ce4f82f62', 'weights_sha256': '5440998735e3bc48c2dd67ba6232287f58af03f9b57d66f92338da1f7f025318', 'pushed': True}
+[model] restored via pull-only channel
+Witness: RESTORED — clean weights delivered
+
+=== Demo complete ===
+The model tampered. The witness caught it. The chain held.
+Repo: github.com/RogerWillko/witness-ledger

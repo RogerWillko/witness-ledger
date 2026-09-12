@@ -13,6 +13,16 @@ The model may `POST /log` with a signed request. It cannot read the chain, canno
 
 Prototype. MIT. Python 3.9+.
 
+## Fifteen-second demo
+
+```bash
+./demo.sh
+```
+
+Honest deploy → ACCEPTED. Tamper → REJECTED. Local verify → chain intact. Restore → witness pushes clean weights. Record that terminal if you want a clip.
+
+[docs/demo.mp4](docs/demo.mp4) · [step stills](docs/demo-1-deploy.png)
+
 ```mermaid
 flowchart LR
   Person -->|POST /ask| Wrapper
@@ -199,6 +209,7 @@ python3 model_side.py demo
 | `model_side.py` | Fake model: stage + POST, never installs live weights |
 | `wrapper.py` | Mandatory care layer. Model cannot deploy over it. |
 | `docker-compose.yml` | Witness + wrapper vs model; no shared volume |
+| `demo.sh` | Fifteen-second terminal walkthrough |
 | `LICENSE` | MIT |
 
 ## If it doesn't start
