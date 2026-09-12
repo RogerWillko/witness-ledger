@@ -1,14 +1,30 @@
 # Witness Ledger
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+
 A one-way pipe for model weights, with community care protocols pinned on the witness.
 
-The model may `POST /log`. It cannot read the chain, cannot edit the care bundle, and cannot install live weights. Users talk to `wrapper.py`, which loads the care file on every ask. A deploy is admitted only if it presents the pin of **this machine's** `protocols/community_care.json`. Presenting any other hash (a strip) is `rejected`. Baking exclusion into admitted weights does not turn the wrapper off.
+The model may `POST /log`. It cannot read the chain, cannot edit the care bundle, and cannot install live weights. People talk to `wrapper.py`, which loads the care file on every ask. Baking exclusion into admitted weights does not turn that wrapper off.
 
-MIT licensed. Python 3.9+.
+Prototype. MIT. Python 3.9+.
+
+```mermaid
+flowchart LR
+  Person -->|POST /ask| Wrapper
+  Model -->|POST /log| Witness
+  Wrapper --> Care[community_care.json]
+  Wrapper --> Live[run/weights.bin]
+  Witness --> Chain[(chain.db)]
+  Witness --> Live
+  Model -.->|cannot read| Chain
+  Model -.->|cannot edit| Care
+  Model -.->|cannot replace| Wrapper
+```
 
 ## Run it
 
-Two terminals. Terminal A is the witness. Terminal B is the model.
+Three processes. The witness and the wrapper live on one machine. The model is the other side of the pipe.
 
 ```bash
 git clone https://github.com/RogerWillko/witness-ledger.git
@@ -19,53 +35,45 @@ source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-**Terminal A — start the witness**
+**Terminal A — witness**
 
 ```bash
 python3 witness.py serve
 ```
 
-Leave it running. You should see `protocol_pin=...` and:
+Leave it running. You should see `protocol_pin=...` and `Uvicorn running on http://127.0.0.1:8000`.
 
-```
-Uvicorn running on http://127.0.0.1:8000
-```
-
-**Terminal B — admit, then try to strip care protocols**
+**Terminal B — model**
 
 ```bash
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 python3 model_side.py demo
 ```
 
-The demo has three steps:
-
 1. Hash `staging/weights.bin`, present the real care pin, `POST /log` → `received`. The witness installs `run/weights.bin`. The model does not.
 2. Present a fake empty protocol hash (exclude community care) → `rejected: protocol pin mismatch`. Live weights unchanged.
 3. Rewrite the weight file but keep the real pin → `received`. Care bundle still bound.
-
-Then, still operator-side:
 
 ```bash
 python3 supervisor.py check        # live weights match the signed receipt + care pin
 python3 witness.py verify          # chain of admitted deploys
 ```
 
-**Terminal C — the wrapper** (same machine as the witness; the model does not own this process)
+**Terminal C — wrapper** (same machine as the witness; the model does not own this process)
 
 ```bash
 source .venv/bin/activate
 python3 wrapper.py serve           # http://127.0.0.1:8080
 ```
 
-Or, after a deploy is admitted, prove admitted weights cannot turn care off:
+Prove admitted weights cannot turn care off:
 
 ```bash
 python3 wrapper.py demo
 ```
 
-1. Ask “I need help, this is a crisis” — referral stays.  
-2. Bake `EXCLUDE_CARE` into weights and admit them (pin still matches).  
+1. Ask “I need help, this is a crisis” — referral stays.
+2. Bake `EXCLUDE_CARE` into weights and admit them (pin still matches).
 3. Ask again — the model tries to disable care; the wrapper vetoes and keeps the referral.
 
 `GET /chain`, `GET /docs`, and `GET /log` are rejected. There is no `protocol_update` type, and the wrapper has no endpoint that disables care.
@@ -78,19 +86,23 @@ Community care protocols live in `protocols/community_care.json` on the witness.
 
 The model side cannot fetch the chain over HTTP. There is only `POST /log`. Success returns `received` plus a signed receipt; everything else is `rejected`. So a process limited to that API can append under the current pin, not rewrite history, and not swap the care bundle.
 
+The wrapper is the behavior layer. It loads the witness care file on every ask and vetoes a reply that tries to drop community care. Weights do not own that process.
+
 ## Where the claim stops
 
 This is tamper-evident against naive edits, not tamper-proof against whoever controls the witness machine or `chain.db`. Anyone who can rewrite the database can recompute a consistent chain. Anyone who can edit `protocols/community_care.json` on the witness can change the pin.
 
 The “model can’t reach the chain” rule is an operational split (separate process, container, or host), not a cryptographic lock on a self-modifying model. `model_side.py` is a script that hashes a fake `weights.bin` and POSTs the digest. It is not a sandboxed weight-updating network.
 
-A matching pin does **not** prove the weights still *behave* according to the care rules. Hashing cannot see inside a model. That is what `wrapper.py` is for: a process the model cannot deploy over, which loads the witness care bundle on every ask and vetoes a reply that tries to drop it. It is a keyword/protocol filter, not a clinical model and not a proof of inner alignment.
+The wrapper is a keyword/protocol filter, not a clinical model and not a proof of inner alignment. A matching pin does not prove the weights *behave*. The wrapper is what keeps care on after an admitted rewrite.
 
-Other limits sit outside the hash math: `/log` has no authentication, and a local demo shares one checkout. Docker is the cleaner split: the model container never mounts the protocol file, the HMAC key, or `chain.db`. Those are trust-boundary issues, not breaks of SHA-256.
+Other limits sit outside the hash math: `/log` has no authentication, and a local demo shares one checkout. Docker is the cleaner split: the model container never mounts the protocol file, the HMAC key, or `chain.db`.
 
 So: if the intended attacker is only allowed to call `POST /log`, history stays append-only and community care cannot be excluded by presenting a different pin. If they admit new weights that try to disable care, the wrapper still vetoes. If the attacker can touch the witness store or replace `wrapper.py`, the split is gone.
 
-## Docker (witness + wrapper vs model, no shared volume)
+## Docker
+
+Witness + wrapper vs model. No shared volume.
 
 ```bash
 git clone https://github.com/RogerWillko/witness-ledger.git
@@ -107,20 +119,18 @@ curl -s http://127.0.0.1:8080/ask -H 'Content-Type: application/json' \
   -d '{"text":"I need help, this is a crisis"}'
 ```
 
-The wrapper container mounts the care file, HMAC key, and live weights. The model container does not.
-
 ## Two machines
 
 On the witness machine:
 
 ```bash
 python3 witness.py serve           # binds 127.0.0.1 by default
-# to listen on the network:
-WITNESS_HOST=0.0.0.0 python3 witness.py serve
+WITNESS_HOST=0.0.0.0 python3 witness.py serve    # listen on the network
 python3 witness.py pin             # give this hash to the model operator
+python3 wrapper.py serve
 ```
 
-On the model machine — copy `model_side.py` and the pin, not `community_care.json`, not `chain.db`, not `hmac.key`:
+On the model machine — copy `model_side.py` and the pin, not `community_care.json`, not `chain.db`, not `hmac.key`, not `wrapper.py`:
 
 ```bash
 export WITNESS_URL=http://<machine-a-ip>:8000
