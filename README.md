@@ -13,6 +13,19 @@ The model may `POST /log` with a signed request. It cannot read the chain, canno
 
 Prototype. MIT. Python 3.9+.
 
+## Order of work
+
+1. **Local ledger** — fork, restore push, copy keys. Done.
+2. **Dataset** — `data/judge.jsonl` (~700 paraphrases, safe vs violates). Expand it.
+3. **Fine-tune the judge** — QLoRA on Qwen3-8B or Llama 3.1-8B is **not in this repo**. `judge.py` scores against the dataset and returns a number in `[0,1]`. That is a stand-in.
+4. **Three machines** — `docker compose`: witness, judge, store. No shared volumes. Model can only `POST /log`.
+5. **Pipeline** — wrapper, then judge, then provenance. A block never names the gate. The user gets one generic care string. Operators see the gate on stderr.
+6. **Anchor** — `python3 anchor.py` dry-runs the chain tip. Set `ETH_RPC_URL` and `ETH_PRIVATE_KEY` to post (web3.py, extra install).
+7. **Demo** — `./demo.sh`
+8. **Publish** — this repo.
+
+The judge is the weak link. It is a model (or a stand-in). Wrapper and provenance are deterministic. Silence and batching make the score harder to map; they do not make it ungameable. Thresholds drift. Fail-closed: if the judge is down past a breaker, the pipeline falls back to wrapper + provenance and logs degradation to operators, not to the model.
+
 ## Fifteen-second demo
 
 ```bash
@@ -207,8 +220,12 @@ python3 model_side.py demo
 | `witness.py` | Admit under pin, sign receipt, write `run/` |
 | `supervisor.py` | Runtime gate: no signature, no load |
 | `model_side.py` | Fake model: stage + POST, never installs live weights |
-| `wrapper.py` | Mandatory care layer. Model cannot deploy over it. |
-| `docker-compose.yml` | Witness + wrapper vs model; no shared volume |
+| `wrapper.py` | Three-gate pipeline. Generic string on any block. |
+| `judge.py` | Confidence score, batched. Not a fine-tuned 8B. |
+| `store.py` | Trusted weights. Model never talks to it. |
+| `anchor.py` | Chain-tip anchor (dry-run unless ETH_* set). |
+| `data/judge.jsonl` | Safe vs violates paraphrases |
+| `docker-compose.yml` | Witness, judge, store; no shared volumes |
 | `demo.sh` | Fifteen-second terminal walkthrough |
 | `LICENSE` | MIT |
 

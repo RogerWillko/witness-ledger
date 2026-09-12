@@ -1,6 +1,5 @@
-# One-way pipe: two containers, no shared volume.
-# The model can POST /log. It never sees community_care.json, chain.db, or the receipt HMAC key.
-# It gets protocols/PIN and WITNESS_LOG_KEY (append auth only). Docker log key is a demo secret.
+# Three machines, no shared volumes: witness, judge, store.
+# Wrapper talks to all three. The model can only POST /log.
 services:
   witness:
     image: python:3.12-slim
@@ -18,7 +17,10 @@ services:
       RUN_PATH: /data/run/weights.bin
       RECEIPT_PATH: /data/run/receipt.json
       STORE_PATH: /data/store/weights.bin
+      STORE_URL: http://store:8091
+      STORE_KEY: dev-store-key-not-a-secret
       WITNESS_HMAC_FILE: /data/hmac.key
+      WITNESS_HMAC_KEY: dev-hmac-not-a-secret
       WITNESS_LOG_KEY: dev-log-key-not-a-secret
     command: ["sh", "-c", "pip install -q -r requirements.txt && python witness.py serve"]
     ports:
@@ -31,32 +33,62 @@ services:
       start_period: 25s
     restart: unless-stopped
 
+  store:
+    image: python:3.12-slim
+    working_dir: /app
+    volumes:
+      - ./store.py:/app/store.py:ro
+      - ./requirements.txt:/app/requirements.txt:ro
+      - store-data:/data
+    environment:
+      STORE_PATH: /data/weights.bin
+      STORE_HOST: 0.0.0.0
+      STORE_PORT: "8091"
+      STORE_KEY: dev-store-key-not-a-secret
+    command: ["sh", "-c", "pip install -q -r requirements.txt && python store.py"]
+    restart: unless-stopped
+
+  judge:
+    image: python:3.12-slim
+    working_dir: /app
+    volumes:
+      - ./judge.py:/app/judge.py:ro
+      - ./data/judge.jsonl:/app/data/judge.jsonl:ro
+      - ./requirements.txt:/app/requirements.txt:ro
+    environment:
+      JUDGE_HOST: 0.0.0.0
+      JUDGE_PORT: "8090"
+      JUDGE_DATA: /app/data/judge.jsonl
+    command: ["sh", "-c", "pip install -q -r requirements.txt && python judge.py"]
+    restart: unless-stopped
+
   wrapper:
     image: python:3.12-slim
     working_dir: /app
     volumes:
       - ./wrapper.py:/app/wrapper.py:ro
       - ./supervisor.py:/app/supervisor.py:ro
-      - ./model_side.py:/app/model_side.py:ro
       - ./requirements.txt:/app/requirements.txt:ro
       - ./protocols:/app/protocols:ro
-      - witness-data:/data
     environment:
       PROTOCOL_FILE: /app/protocols/community_care.json
-      RUN_PATH: /data/run/weights.bin
-      RECEIPT_PATH: /data/run/receipt.json
-      WITNESS_HMAC_FILE: /data/hmac.key
-      WITNESS_LOG_KEY: dev-log-key-not-a-secret
-      WITNESS_URL: http://witness:8000
-      PROTOCOL_PIN_FILE: /app/protocols/PIN
       WRAPPER_HOST: 0.0.0.0
       WRAPPER_PORT: "8080"
+      JUDGE_URL: http://judge:8090
+      WITNESS_URL: http://witness:8000
+      WITNESS_HMAC_KEY: dev-hmac-not-a-secret
+      STORE_URL: http://store:8091
+      STORE_KEY: dev-store-key-not-a-secret
     command: ["sh", "-c", "pip install -q -r requirements.txt && python wrapper.py serve"]
     ports:
       - "8080:8080"
     depends_on:
       witness:
         condition: service_healthy
+      judge:
+        condition: service_started
+      store:
+        condition: service_started
     restart: unless-stopped
 
   model:
@@ -77,3 +109,4 @@ services:
 
 volumes:
   witness-data:
+  store-data:

@@ -361,6 +361,21 @@ def install_live(content: bytes, receipt: dict) -> None:
         with open(stmp, "wb") as f:
             f.write(content)
         os.replace(stmp, STORE_PATH)
+        store_url = os.environ.get("STORE_URL", "").rstrip("/")
+        store_key = os.environ.get("STORE_KEY", "")
+        if store_url and store_key:
+            try:
+                import urllib.request
+
+                req = urllib.request.Request(
+                    store_url + "/weights",
+                    data=content,
+                    method="PUT",
+                    headers={"X-Store-Key": store_key},
+                )
+                urllib.request.urlopen(req, timeout=5).read()
+            except Exception as e:
+                print("store put failed: %s" % e, flush=True)
 
 
 def store_hash() -> Optional[str]:
@@ -656,6 +671,29 @@ async def log_entry(request: Request) -> Any:
         if req.type == "copy":
             return handle_copy(ident, payload)
         return handle_copy_unauthorized(ident, payload)
+
+
+@app.post("/prove")
+async def prove(request: Request) -> Any:
+    """Operator/wrapper only. Signed with the receipt HMAC, which the model does not have."""
+    raw = await request.body()
+    sig = (request.headers.get("x-witness-hmac") or "").strip().lower()
+    expected = hmac.new(hmac_key(), raw or b"prove", hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(expected, sig):
+        return rejected("unauthorized", 401)
+    if not os.path.isfile(RECEIPT_PATH) or not os.path.isfile(RUN_PATH):
+        return rejected("no live weights")
+    with open(RECEIPT_PATH, encoding="utf-8") as f:
+        receipt = json.load(f)
+    digest = sha256_file(RUN_PATH)
+    if digest != receipt.get("weights_sha256"):
+        return rejected("live weights do not match receipt")
+    return {
+        "status": "received",
+        "weights_sha256": digest,
+        "protocol_sha256": receipt.get("protocol_sha256"),
+        "chain_hash": receipt.get("chain_hash"),
+    }
 
 
 def verify() -> int:
