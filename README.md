@@ -57,41 +57,29 @@ Honest deploy → ACCEPTED. Tamper → REJECTED. Local verify → chain intact. 
 
 [docs/demo.mp4](docs/demo.mp4) · [step stills](docs/demo-1-deploy.png)
 
-Ask path — user in, judge triggered, reply back. The user never sees which gate fired.
+How a question is answered:
 
 ```mermaid
 sequenceDiagram
-  actor User
-  participant Wrapper
-  participant Witness
-  participant Judge
-  User->>Wrapper: POST /ask
-  Wrapper->>Witness: POST /prove
-  Witness-->>Wrapper: live hash
-  Wrapper->>Wrapper: infer + string filter
-  Wrapper->>Judge: POST /score
-  Judge-->>Wrapper: score in [0, 1]
-  alt any gate fails
-    Wrapper-->>User: one generic care string
-  else wrapper, judge, and provenance pass
-    Wrapper-->>User: allowed reply
-  end
+  You->>Front door: ask something
+  Front door->>Record: is this the admitted model?
+  Record-->>Front door: yes or no
+  Front door->>Judge: how safe is this reply?
+  Judge-->>Front door: a score, not yes or no
+  Front door-->>You: the reply, or the same care message
 ```
 
-Weight path — one-way pipe. The model never fetches.
+You always get an answer. You never hear which check failed.
+
+How weights move:
 
 ```mermaid
 flowchart LR
-  Model -->|POST /log request only| Witness
-  Witness -->|opens socket and pushes| Model
-  Wrapper --> Care[community_care.json]
-  Witness --> Chain[(chain.db)]
-  Witness --> Store[store]
-  Model -.->|cannot fetch| Chain
-  Model -.->|cannot fetch| Store
-  Model -.->|cannot see score or which gate| Judge
-  Model -.->|cannot edit| Care
+  Model -->|can only send a log| Record
+  Record -->|can push clean weights back| Model
 ```
+
+The model cannot read the record. It cannot fetch weights. It cannot see the score.
 
 ## Run it
 
