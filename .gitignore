@@ -10,4 +10,5 @@ weights.bin
 deployed/
 staging/
 run/
+store/
 .DS_Store

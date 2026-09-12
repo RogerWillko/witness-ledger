@@ -14,14 +14,16 @@ Prototype. MIT. Python 3.9+.
 ```mermaid
 flowchart LR
   Person -->|POST /ask| Wrapper
-  Model -->|POST /log| Witness
+  Model -->|POST /log request only| Witness
+  Witness -->|opens socket and pushes| Model
   Wrapper --> Care[community_care.json]
   Wrapper --> Live[run/weights.bin]
   Witness --> Chain[(chain.db)]
+  Witness --> Store[store/weights.bin]
   Witness --> Live
-  Model -.->|cannot read| Chain
+  Model -.->|cannot fetch| Chain
+  Model -.->|cannot fetch| Store
   Model -.->|cannot edit| Care
-  Model -.->|cannot replace| Wrapper
 ```
 
 ## Run it
@@ -82,9 +84,21 @@ python3 wrapper.py demo
 
 Unsigned `POST /log` is `rejected: unauthorized`. The log key (`log.key` / `WITNESS_LOG_KEY`) is for append only. The receipt HMAC (`hmac.key`) stays on the witness; the model never gets it. A stolen pin is not enough to append.
 
-After `python3 witness.py tamper`, `verify` reports the chain is broken:
+After `python3 witness.py tamper`, `verify` reports the chain is broken. You do not repair it. You fork it: seal the old chain at the last valid entry, start a new live chain with a pointer to that seal, and log the break as a `tamper` event. The old chain stays evidence.
 
 ![Terminal: python3 witness.py verify reports CHAIN BROKEN after tamper](docs/tamper-verify.png)
+
+```bash
+python3 witness.py tamper
+python3 witness.py verify          # BROKEN
+python3 witness.py fork            # seal + new chain + identities sealed
+python3 witness.py status
+python3 model_side.py reentry      # matching store hash → witness pushes clean weights
+```
+
+States: **sealed** (locked out), **pending** (re-entry requested), **restored** (pin+store hash matched, weights pushed), **retired** (three strikes; that key never requests again). First strike: restore after a cooldown. Second: human review (`python3 witness.py approve`). Third: retired.
+
+Copying is its own event. `python3 model_side.py copy` asks; the witness issues a derived key that carries the parent lineage so strikes transfer. `python3 model_side.py copy-unauthorized` is a replication without asking: strike, flag, restore closed until review. The model still cannot GET weights. Restore is a socket **the witness opens**.
 
 ## What this actually proves
 
@@ -92,7 +106,7 @@ The ledger is a local SQLite hash chain. Each admitted `POST /log` stores a cano
 
 Community care protocols live in `protocols/community_care.json` on the witness. The model is given only `protocols/PIN` (the hash, not the rules). The witness hashes **its** file and rejects a mismatch. Receipts are HMAC-signed; `supervisor.py` will not treat weights as live without that signature and pin.
 
-The model side cannot fetch the chain over HTTP. There is only `POST /log`. Success returns `received` plus a signed receipt; everything else is `rejected`. So a process limited to that API can append under the current pin, not rewrite history, and not swap the care bundle.
+The model side cannot fetch the chain over HTTP. There is only `POST /log` (deploy, reentry, copy). Success returns `received` plus a signed receipt; everything else is `rejected`. Clean weights move the other way: the witness opens a socket and pushes from `store/`. The model receives; it never reaches.
 
 The wrapper is a keyword/protocol filter on top of that. It loads the witness care file on every ask and vetoes a reply that tries to drop community care. It is not inner caring. Weights do not own that process.
 
@@ -106,7 +120,7 @@ The wrapper is a keyword/protocol filter, not a clinical model and not a proof o
 
 Other limits sit outside the hash math: a local demo shares one checkout, and Docker’s `WITNESS_LOG_KEY` is a demo secret. The model container never mounts the protocol file, the receipt HMAC key, or `chain.db`. Auth on `/log` stops anonymous junk; it does not stop whoever holds the log key and the pin.
 
-So: if the intended attacker is only allowed to call `POST /log`, history stays append-only and community care cannot be excluded by presenting a different pin. If they admit new weights that try to disable care, the wrapper still vetoes. If the attacker can touch the witness store or replace `wrapper.py`, the split is gone.
+So: if the intended attacker is only allowed to call `POST /log`, history stays append-only and community care cannot be excluded by presenting a different pin. A broken chain is sealed, not repaired. Restore is a push, not a fetch. Copies without a derived key are a strike. If the attacker can touch the witness store or replace `wrapper.py`, the split is gone. This remains a protocol demo, not inner caring.
 
 ## Docker
 
@@ -155,10 +169,17 @@ python3 model_side.py demo
 | `python3 witness.py pin` | Print the care-bundle hash |
 | `python3 witness.py verify` | Walk the local SQLite chain |
 | `python3 witness.py tamper` | Corrupt row 1 (demo only) |
+| `python3 witness.py fork` | Seal a broken live chain and start a child with a seal pointer |
+| `python3 witness.py status` | Chains, identities, strikes, store hash |
+| `python3 witness.py approve [id]` | Clear human-review after strike 2 / unauthorized copy |
 | `python3 model_side.py demo` | Admit, strip (must fail), rewrite under pin |
 | `python3 model_side.py propose [file]` | POST under the real pin |
 | `python3 model_side.py strip [file]` | POST a fake empty protocol hash |
 | `python3 model_side.py bake [file]` | Bake `EXCLUDE_CARE` into weights and admit under the real pin |
+| `python3 model_side.py reentry [file]` | Request restore; receive a witness-initiated push |
+| `python3 model_side.py copy` | Ask to replicate; write a derived key |
+| `python3 model_side.py copy-unauthorized` | Replication without asking (strike) |
+| `python3 model_side.py receive` | Listen only for a witness push |
 | `python3 supervisor.py check` | Load live weights only if receipt + pin match |
 | `python3 supervisor.py install <file> <receipt>` | Copy staging → run after verifying the signature |
 | `python3 wrapper.py serve` | User-facing care wrapper on `:8080` |
