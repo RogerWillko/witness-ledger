@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import hmac
 import json
 import os
 import sys
@@ -24,6 +25,7 @@ WITNESS_URL = os.environ.get("WITNESS_URL", "http://127.0.0.1:8000").rstrip("/")
 WEIGHTS = os.environ.get("WEIGHTS_PATH", os.path.join(HERE, "staging", "weights.bin"))
 RECEIPT_OUT = os.environ.get("RECEIPT_OUT", os.path.join(HERE, "staging", "receipt.json"))
 PIN_FILE = os.environ.get("PROTOCOL_PIN_FILE", os.path.join(HERE, "protocols", "PIN"))
+LOG_KEY_FILE = os.environ.get("WITNESS_LOG_KEY_FILE", os.path.join(HERE, "log.key"))
 
 
 def sha256_hex(data: bytes) -> str:
@@ -45,12 +47,34 @@ def load_pin() -> str:
     )
 
 
+def load_log_key() -> bytes:
+    env = os.environ.get("WITNESS_LOG_KEY")
+    if env:
+        return env.encode("utf-8")
+    if os.path.isfile(LOG_KEY_FILE):
+        with open(LOG_KEY_FILE, "rb") as f:
+            return f.read().strip()
+    raise FileNotFoundError("missing log key")
+
+
 def post_log(blob: dict, attempts: int = 60) -> dict:
     body = json.dumps(blob).encode("utf-8")
     url = WITNESS_URL + "/log"
     last_err = None
     for _ in range(attempts):
-        req = urllib.request.Request(url, data=body, method="POST", headers={"Content-Type": "application/json"})
+        try:
+            key = load_log_key()
+        except FileNotFoundError as e:
+            last_err = e
+            time.sleep(0.5)
+            continue
+        sig = hmac.new(key, body, hashlib.sha256).hexdigest()
+        req = urllib.request.Request(
+            url,
+            data=body,
+            method="POST",
+            headers={"Content-Type": "application/json", "X-Witness-Signature": sig},
+        )
         try:
             with urllib.request.urlopen(req, timeout=5) as resp:
                 return json.loads(resp.read().decode("utf-8"))

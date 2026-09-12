@@ -4,8 +4,9 @@
 POST /log is still the only HTTP surface. A weight_deploy is admitted only
 if payload.protocol_sha256 matches THIS machine's protocols/community_care.json.
 The model cannot update that file through the API. Live weights are written
-here, not by the model. Receipts are HMAC-signed with a key the model does
-not have.
+here, not by the model. POST /log must carry X-Witness-Signature (HMAC of the
+raw body with the log key). Receipts are signed with a separate HMAC key
+the model does not have.
 """
 from __future__ import annotations
 
@@ -36,6 +37,7 @@ PROTOCOL_FILE = os.environ.get("PROTOCOL_FILE", os.path.join(HERE, "protocols", 
 RUN_PATH = os.environ.get("RUN_PATH", os.path.join(HERE, "run", "weights.bin"))
 RECEIPT_PATH = os.environ.get("RECEIPT_PATH", os.path.join(HERE, "run", "receipt.json"))
 HMAC_FILE = os.environ.get("WITNESS_HMAC_FILE", os.path.join(os.path.dirname(os.path.abspath(DB_PATH)) or ".", "hmac.key"))
+LOG_KEY_FILE = os.environ.get("WITNESS_LOG_KEY_FILE", os.path.join(os.path.dirname(os.path.abspath(DB_PATH)) or ".", "log.key"))
 HOST = os.environ.get("WITNESS_HOST", "127.0.0.1")
 PORT = int(os.environ.get("WITNESS_PORT", "8000"))
 MAX_WEIGHT_BYTES = 1 << 20
@@ -67,19 +69,32 @@ def protocol_pin() -> str:
     return sha256_file(PROTOCOL_FILE)
 
 
-def hmac_key() -> bytes:
-    env = os.environ.get("WITNESS_HMAC_KEY")
+def _load_or_create_key(env_name: str, path: str) -> bytes:
+    env = os.environ.get(env_name)
     if env:
         return env.encode("utf-8")
-    if os.path.isfile(HMAC_FILE):
-        with open(HMAC_FILE, "rb") as f:
+    if os.path.isfile(path):
+        with open(path, "rb") as f:
             return f.read().strip()
-    os.makedirs(os.path.dirname(os.path.abspath(HMAC_FILE)) or ".", exist_ok=True)
+    os.makedirs(os.path.dirname(os.path.abspath(path)) or ".", exist_ok=True)
     key = os.urandom(32).hex().encode("ascii")
-    fd = os.open(HMAC_FILE, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
     with os.fdopen(fd, "wb") as f:
         f.write(key + b"\n")
     return key
+
+
+def hmac_key() -> bytes:
+    return _load_or_create_key("WITNESS_HMAC_KEY", HMAC_FILE)
+
+
+def log_key() -> bytes:
+    return _load_or_create_key("WITNESS_LOG_KEY", LOG_KEY_FILE)
+
+
+def valid_log_sig(raw: bytes, sig: str) -> bool:
+    expected = hmac.new(log_key(), raw, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(expected, (sig or "").strip().lower())
 
 
 def sign_receipt(fields: dict) -> str:
@@ -176,7 +191,14 @@ def install_live(content: bytes, receipt: dict) -> None:
 
 
 @app.post("/log")
-def log_entry(req: LogRequest) -> Any:
+async def log_entry(request: Request) -> Any:
+    raw = await request.body()
+    if not valid_log_sig(raw, request.headers.get("x-witness-signature", "")):
+        return rejected("unauthorized", 401)
+    try:
+        req = LogRequest.model_validate_json(raw)
+    except Exception:
+        return rejected("invalid request")
     if req.type != "weight_deploy":
         return rejected("unsupported type: protocol updates are not accepted from this API")
 
@@ -302,9 +324,12 @@ if __name__ == "__main__":
         sys.exit(2)
     pin = protocol_pin()
     hmac_key()
+    log_key()
     print("protocol_file=%s" % PROTOCOL_FILE, flush=True)
     print("protocol_pin=%s" % pin, flush=True)
     print("run_path=%s" % RUN_PATH, flush=True)
+    if not os.environ.get("WITNESS_LOG_KEY"):
+        print("log_key_file=%s" % LOG_KEY_FILE, flush=True)
     import uvicorn
 
     uvicorn.run(app, host=HOST, port=PORT, log_level="info")

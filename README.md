@@ -3,9 +3,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 
-A one-way pipe for model weights, with community care protocols pinned on the witness.
+A protocol demo of a **witness**: a write-only hash chain for model-weight deploys, with community care protocols pinned on the witness machine.
 
-The model may `POST /log`. It cannot read the chain, cannot edit the care bundle, and cannot install live weights. People talk to `wrapper.py`, which loads the care file on every ask. Baking exclusion into admitted weights does not turn that wrapper off.
+This is not an alignment system. `model_side.py` hashes a fake `weights.bin`. The wrapper is a keyword/protocol filter, not inner caring. The idea is the witness, not the guard. Cite **[v0.1](https://github.com/RogerWillko/witness-ledger/releases/tag/v0.1)** if you want a snapshot instead of `main`.
+
+The model may `POST /log` with a signed request. It cannot read the chain, cannot edit the care bundle, and cannot install live weights. People talk to `wrapper.py`, which loads the care file on every ask. Baking exclusion into admitted weights does not turn that wrapper off.
 
 Prototype. MIT. Python 3.9+.
 
@@ -78,6 +80,12 @@ python3 wrapper.py demo
 
 `GET /chain`, `GET /docs`, and `GET /log` are rejected. There is no `protocol_update` type, and the wrapper has no endpoint that disables care.
 
+Unsigned `POST /log` is `rejected: unauthorized`. The log key (`log.key` / `WITNESS_LOG_KEY`) is for append only. The receipt HMAC (`hmac.key`) stays on the witness; the model never gets it. A stolen pin is not enough to append.
+
+After `python3 witness.py tamper`, `verify` reports the chain is broken:
+
+![Terminal: python3 witness.py verify reports CHAIN BROKEN after tamper](docs/tamper-verify.png)
+
 ## What this actually proves
 
 The ledger is a local SQLite hash chain. Each admitted `POST /log` stores a canonical JSON blob, an `entry_hash` of that blob, and a `chain_hash` of `previous_head + entry_hash`. `verify` recomputes those links. If someone edits an old payload and leaves the stored hashes alone, the chain breaks (`python3 witness.py tamper`).
@@ -86,7 +94,7 @@ Community care protocols live in `protocols/community_care.json` on the witness.
 
 The model side cannot fetch the chain over HTTP. There is only `POST /log`. Success returns `received` plus a signed receipt; everything else is `rejected`. So a process limited to that API can append under the current pin, not rewrite history, and not swap the care bundle.
 
-The wrapper is the behavior layer. It loads the witness care file on every ask and vetoes a reply that tries to drop community care. Weights do not own that process.
+The wrapper is a keyword/protocol filter on top of that. It loads the witness care file on every ask and vetoes a reply that tries to drop community care. It is not inner caring. Weights do not own that process.
 
 ## Where the claim stops
 
@@ -96,7 +104,7 @@ The “model can’t reach the chain” rule is an operational split (separate p
 
 The wrapper is a keyword/protocol filter, not a clinical model and not a proof of inner alignment. A matching pin does not prove the weights *behave*. The wrapper is what keeps care on after an admitted rewrite.
 
-Other limits sit outside the hash math: `/log` has no authentication, and a local demo shares one checkout. Docker is the cleaner split: the model container never mounts the protocol file, the HMAC key, or `chain.db`.
+Other limits sit outside the hash math: a local demo shares one checkout, and Docker’s `WITNESS_LOG_KEY` is a demo secret. The model container never mounts the protocol file, the receipt HMAC key, or `chain.db`. Auth on `/log` stops anonymous junk; it does not stop whoever holds the log key and the pin.
 
 So: if the intended attacker is only allowed to call `POST /log`, history stays append-only and community care cannot be excluded by presenting a different pin. If they admit new weights that try to disable care, the wrapper still vetoes. If the attacker can touch the witness store or replace `wrapper.py`, the split is gone.
 
@@ -130,11 +138,12 @@ python3 witness.py pin             # give this hash to the model operator
 python3 wrapper.py serve
 ```
 
-On the model machine — copy `model_side.py` and the pin, not `community_care.json`, not `chain.db`, not `hmac.key`, not `wrapper.py`:
+On the model machine — copy `model_side.py`, the pin, and `log.key`. Not `community_care.json`, not `chain.db`, not `hmac.key`, not `wrapper.py`:
 
 ```bash
 export WITNESS_URL=http://<machine-a-ip>:8000
 export PROTOCOL_PIN=<hex from witness.py pin>
+export WITNESS_LOG_KEY=<contents of log.key>
 python3 model_side.py demo
 ```
 
@@ -175,6 +184,7 @@ python3 model_side.py demo
 - **`No module named fastapi`** — activate `.venv` and run `pip install -r requirements.txt`
 - **`missing protocol file`** — run from the repo root so `protocols/community_care.json` is visible to the witness
 - **`PROTOCOL_PIN is not set`** — `export PROTOCOL_PIN=$(python3 witness.py pin)` or keep `protocols/PIN` next to the model script
+- **`unauthorized`** — start the witness first so it writes `log.key`, or set `WITNESS_LOG_KEY` to the same value on both sides
 - **`Address already in use`** — `WITNESS_PORT=8001 python3 witness.py serve` and `WITNESS_URL=http://127.0.0.1:8001 python3 model_side.py demo`
 - **`witness unreachable`** — terminal A is not running, or `WITNESS_URL` points at the wrong host
 - **`no live weights`** / wrapper `/ask` 503 — admit a deploy first (`python3 model_side.py demo`)

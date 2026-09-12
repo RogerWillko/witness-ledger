@@ -1,6 +1,6 @@
 # One-way pipe: two containers, no shared volume.
-# The model can POST /log. It never sees community_care.json, chain.db, or the HMAC key.
-# Only protocols/PIN (the hash, not the rules) is injected into the model container.
+# The model can POST /log. It never sees community_care.json, chain.db, or the receipt HMAC key.
+# It gets protocols/PIN and WITNESS_LOG_KEY (append auth only). Docker log key is a demo secret.
 services:
   witness:
     image: python:3.12-slim
@@ -18,6 +18,7 @@ services:
       RUN_PATH: /data/run/weights.bin
       RECEIPT_PATH: /data/run/receipt.json
       WITNESS_HMAC_FILE: /data/hmac.key
+      WITNESS_LOG_KEY: dev-log-key-not-a-secret
     command: ["sh", "-c", "pip install -q -r requirements.txt && python witness.py serve"]
     ports:
       - "8000:8000"
@@ -44,6 +45,7 @@ services:
       RUN_PATH: /data/run/weights.bin
       RECEIPT_PATH: /data/run/receipt.json
       WITNESS_HMAC_FILE: /data/hmac.key
+      WITNESS_LOG_KEY: dev-log-key-not-a-secret
       WITNESS_URL: http://witness:8000
       PROTOCOL_PIN_FILE: /app/protocols/PIN
       WRAPPER_HOST: 0.0.0.0
@@ -65,6 +67,7 @@ services:
     environment:
       WITNESS_URL: http://witness:8000
       PROTOCOL_PIN_FILE: /app/protocols/PIN
+      WITNESS_LOG_KEY: dev-log-key-not-a-secret
     command: ["python", "model_side.py", "demo"]
     depends_on:
       witness:
