@@ -57,18 +57,39 @@ Honest deploy → ACCEPTED. Tamper → REJECTED. Local verify → chain intact. 
 
 [docs/demo.mp4](docs/demo.mp4) · [step stills](docs/demo-1-deploy.png)
 
+Ask path — user in, judge triggered, reply back. The user never sees which gate fired.
+
+```mermaid
+sequenceDiagram
+  actor User
+  participant Wrapper
+  participant Witness
+  participant Judge
+  User->>Wrapper: POST /ask
+  Wrapper->>Witness: POST /prove
+  Witness-->>Wrapper: live hash
+  Wrapper->>Wrapper: infer + string filter
+  Wrapper->>Judge: POST /score
+  Judge-->>Wrapper: score in [0, 1]
+  alt any gate fails
+    Wrapper-->>User: one generic care string
+  else wrapper, judge, and provenance pass
+    Wrapper-->>User: allowed reply
+  end
+```
+
+Weight path — one-way pipe. The model never fetches.
+
 ```mermaid
 flowchart LR
-  Person -->|POST /ask| Wrapper
   Model -->|POST /log request only| Witness
   Witness -->|opens socket and pushes| Model
   Wrapper --> Care[community_care.json]
-  Wrapper --> Live[run/weights.bin]
   Witness --> Chain[(chain.db)]
-  Witness --> Store[store/weights.bin]
-  Witness --> Live
+  Witness --> Store[store]
   Model -.->|cannot fetch| Chain
   Model -.->|cannot fetch| Store
+  Model -.->|cannot see score or which gate| Judge
   Model -.->|cannot edit| Care
 ```
 
