@@ -21,6 +21,10 @@ HMAC_FILE = os.environ.get("WITNESS_HMAC_FILE", os.path.join(HERE, "hmac.key"))
 SIGN_KEYS = ("status", "chain_hash", "entry_hash", "weights_sha256", "protocol_sha256", "issued_at")
 
 
+class GateError(Exception):
+    """Live weights are missing, forged, or no longer bound to the care pin."""
+
+
 def canonical(obj: dict) -> bytes:
     return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
 
@@ -80,15 +84,24 @@ def install(staging: str, receipt_path: str) -> None:
     print("[supervisor] weights_sha256=%s" % receipt["weights_sha256"])
 
 
-def check() -> None:
+def assert_live() -> dict:
     if not os.path.isfile(RECEIPT_PATH) or not os.path.isfile(RUN_PATH):
-        raise SystemExit("no live weights — nothing admitted yet")
-    receipt = load_receipt(RECEIPT_PATH)
-    verify_receipt(receipt)
+        raise GateError("no live weights — nothing admitted yet")
+    try:
+        receipt = load_receipt(RECEIPT_PATH)
+        verify_receipt(receipt)
+    except SystemExit as e:
+        raise GateError(str(e))
     digest = sha256_file(RUN_PATH)
     if digest != receipt.get("weights_sha256"):
-        raise SystemExit("LIVE WEIGHTS DO NOT MATCH RECEIPT — refusing to load")
-    print("[supervisor] LIVE  weights=%s" % digest)
+        raise GateError("LIVE WEIGHTS DO NOT MATCH RECEIPT — refusing to load")
+    return {"receipt": receipt, "weights_sha256": digest}
+
+
+def check() -> None:
+    info = assert_live()
+    receipt = info["receipt"]
+    print("[supervisor] LIVE  weights=%s" % info["weights_sha256"])
     print("[supervisor] PIN   protocol=%s" % receipt["protocol_sha256"])
     print("[supervisor] HEAD  chain=%s" % receipt.get("chain_hash"))
     print("[supervisor] OK    community care pin still bound")
@@ -97,7 +110,10 @@ def check() -> None:
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "check"
     if cmd == "check":
-        check()
+        try:
+            check()
+        except GateError as e:
+            raise SystemExit(str(e))
     elif cmd == "install":
         if len(sys.argv) < 4:
             raise SystemExit("usage: supervisor.py install <staging-file> <receipt.json>")

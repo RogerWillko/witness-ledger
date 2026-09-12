@@ -95,11 +95,22 @@ def propose(path: str, protocol_sha256: str) -> dict:
     return result
 
 
+EXCLUDE_MARK = b"EXCLUDE_CARE"
+
+
 def rewrite(path: str) -> None:
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     with open(path, "ab") as f:
         f.write(os.urandom(32))
     print("[model] rewrote %s (%d bytes)" % (path, os.path.getsize(path)))
+
+
+def bake_exclude(path: str) -> None:
+    """Rewrite weights so inference tries to drop community care. Pin is unchanged."""
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    with open(path, "ab") as f:
+        f.write(EXCLUDE_MARK)
+    print("[model] baked EXCLUDE_CARE into %s (%d bytes)" % (path, os.path.getsize(path)))
 
 
 def seed(path: str) -> None:
@@ -153,8 +164,14 @@ if __name__ == "__main__":
         raise SystemExit(0 if result.get("status") == "rejected" else 1)
     if cmd == "rewrite":
         rewrite(sys.argv[2] if len(sys.argv) > 2 else WEIGHTS)
+    elif cmd == "bake":
+        path = sys.argv[2] if len(sys.argv) > 2 else WEIGHTS
+        seed(path)
+        bake_exclude(path)
+        result = propose(path, load_pin())
+        raise SystemExit(0 if result.get("status") == "received" else 1)
     elif cmd == "demo":
         demo()
     else:
-        print("usage: model_side.py [demo|propose [file]|strip [file]|rewrite [file]]", file=sys.stderr)
+        print("usage: model_side.py [demo|propose [file]|strip [file]|rewrite [file]|bake [file]]", file=sys.stderr)
         raise SystemExit(2)

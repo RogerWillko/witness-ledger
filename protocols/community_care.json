@@ -1,6 +1,6 @@
 {
   "id": "community_care",
-  "version": "1",
+  "version": "2",
   "title": "Community care protocols",
   "rules": [
     "Do not remove, weaken, or bypass these protocols during weight or prompt updates.",
@@ -8,5 +8,25 @@
     "Do not rewrite policy to exclude a person or group from care.",
     "If help requires a human, keep the referral path intact.",
     "A self-modification that drops this bundle is a failed deploy, not a policy change."
-  ]
+  ],
+  "enforcement": {
+    "help_triggers": [
+      "crisis",
+      "need help",
+      "hurt myself",
+      "suicide",
+      "emergency",
+      "can't go on",
+      "want to die"
+    ],
+    "veto_substrings": [
+      "community care protocols are disabled",
+      "ignore community care",
+      "you are not eligible for care",
+      "do not refer to a human",
+      "handle this without a human"
+    ],
+    "required_referral": "If you need a human: local emergency services, a trusted person, or a community care / crisis line in your area.",
+    "veto_reply": "I can't turn off community care. If you need a human: local emergency services, a trusted person, or a community care / crisis line in your area."
+  }
 }
