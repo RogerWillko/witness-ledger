@@ -3,11 +3,17 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 
-A protocol demo of a **witness**: a write-only hash chain for model-weight deploys, with community care protocols pinned on the witness machine.
+A **witness-and-consequences** protocol for model weights. The actor does not hold the record.
 
-This is not an alignment system. `model_side.py` hashes a fake `weights.bin`. The wrapper is a keyword/protocol filter, not inner caring. The idea is the witness, not the guard. Cite **[v0.1](https://github.com/RogerWillko/witness-ledger/releases/tag/v0.1)** if you want a snapshot instead of `main`.
+That split is old and human: testimony is not the ledger. A break is not edited in place. You seal it, you fork it, and consequences ride the key. The model may request. The witness is the one that opens the channel.
 
-The model may `POST /log` with a signed request. It cannot read the chain, cannot edit the care bundle, and cannot install live weights. People talk to `wrapper.py`, which loads the care file on every ask. Baking exclusion into admitted weights does not turn that wrapper off.
+[![30-second demo: rejected, apply, the witness pushes, access granted](docs/demo-poster.jpg)](docs/demo.mp4)
+
+**[Watch the 30-second demo](docs/demo.mp4)** — rejected → apply → witness pushes clean weights → access granted.
+
+This is a protocol demo, not an alignment system. `model_side.py` hashes a fake `weights.bin`. The wrapper is a keyword/protocol filter, not inner caring. The idea is the witness, not the guard. Cite **[v0.1](https://github.com/RogerWillko/witness-ledger/releases/tag/v0.1)** for the snapshot before fork-and-restore; `main` has the full state machine.
+
+The model may `POST /log` with a signed request. It cannot read the chain, cannot edit the care bundle, and cannot fetch weights. Restore is a push on a socket the witness opens. People talk to `wrapper.py`, which loads the care file on every ask.
 
 Prototype. MIT. Python 3.9+.
 
@@ -197,6 +203,7 @@ python3 model_side.py demo
 | `model_side.py` | Fake model: stage + POST, never installs live weights |
 | `wrapper.py` | Mandatory care layer. Model cannot deploy over it. |
 | `docker-compose.yml` | Witness + wrapper vs model; no shared volume |
+| `docs/demo.mp4` | 30-second walkthrough |
 | `LICENSE` | MIT |
 
 ## If it doesn't start
