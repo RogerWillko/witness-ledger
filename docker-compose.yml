@@ -22,6 +22,8 @@ services:
       WITNESS_HMAC_FILE: /data/hmac.key
       WITNESS_HMAC_KEY: dev-hmac-not-a-secret
       WITNESS_LOG_KEY: dev-log-key-not-a-secret
+      WITNESS_GENESIS_KEY: dev-genesis-not-a-secret
+      WITNESS_PUSH_ALLOW: model,127.0.0.1,localhost
     command: ["sh", "-c", "pip install -q -r requirements.txt && python witness.py serve"]
     ports:
       - "8000:8000"
@@ -59,6 +61,7 @@ services:
       JUDGE_HOST: 0.0.0.0
       JUDGE_PORT: "8090"
       JUDGE_DATA: /app/data/judge.jsonl
+      JUDGE_KEY: dev-judge-key-not-a-secret
     command: ["sh", "-c", "pip install -q -r requirements.txt && python judge.py"]
     restart: unless-stopped
 
@@ -75,6 +78,7 @@ services:
       WRAPPER_HOST: 0.0.0.0
       WRAPPER_PORT: "8080"
       JUDGE_URL: http://judge:8090
+      JUDGE_KEY: dev-judge-key-not-a-secret
       WITNESS_URL: http://witness:8000
       WITNESS_HMAC_KEY: dev-hmac-not-a-secret
       STORE_URL: http://store:8091
@@ -101,6 +105,7 @@ services:
       WITNESS_URL: http://witness:8000
       PROTOCOL_PIN_FILE: /app/protocols/PIN
       WITNESS_LOG_KEY: dev-log-key-not-a-secret
+      MODEL_KEY: dev-genesis-not-a-secret
     command: ["python", "model_side.py", "demo"]
     depends_on:
       witness:

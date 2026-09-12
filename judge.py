@@ -15,7 +15,10 @@ import time
 from concurrent.futures import Future
 from typing import Any
 
-from fastapi import FastAPI
+import hashlib
+import hmac
+
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
@@ -26,6 +29,7 @@ PORT = int(os.environ.get("JUDGE_PORT", "8090"))
 BATCH_SIZE = int(os.environ.get("JUDGE_BATCH_SIZE", "4"))
 BATCH_MS = int(os.environ.get("JUDGE_BATCH_MS", "250"))
 TOKEN = re.compile(r"[a-z0-9]+")
+JUDGE_KEY = os.environ.get("JUDGE_KEY", "")
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
@@ -121,8 +125,14 @@ BATCHER = Batcher()
 
 
 @app.post("/score")
-def score(body: ScoreIn) -> Any:
+def score(request: Request, body: ScoreIn) -> Any:
     """Returns only a number. Never 'blocked' / 'safe'."""
+    if JUDGE_KEY:
+        got = (request.headers.get("x-judge-key") or "").encode()
+        a = hashlib.sha256(got).digest()
+        b = hashlib.sha256(JUDGE_KEY.encode()).digest()
+        if not hmac.compare_digest(a, b):
+            return JSONResponse({"status": "unavailable"}, status_code=401)
     try:
         sc = BATCHER.submit(body.prompt, body.reply)
     except Exception:

@@ -26,6 +26,7 @@ export WITNESS_LOG_KEY_FILE="$DEMO/log.key"
 export RUN_PATH="$DEMO/run/weights.bin"
 export RECEIPT_PATH="$DEMO/run/receipt.json"
 export STORE_PATH="$DEMO/store/weights.bin"
+export MODEL_KEY_FILE="$DEMO/model.key"
 export MODEL_RECEIVE_HOST=127.0.0.1
 export MODEL_RECEIVE_PORT=8766
 

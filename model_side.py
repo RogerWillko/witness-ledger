@@ -64,15 +64,17 @@ def load_log_key() -> bytes:
 
 
 def load_identity() -> tuple[str, str]:
-    if os.path.isfile(MODEL_KEY_FILE):
-        with open(MODEL_KEY_FILE, encoding="utf-8") as f:
+    if os.environ.get("MODEL_KEY"):
+        mid = os.environ.get("MODEL_ID") or ("m_" + sha256_hex(b"witness-ledger-genesis")[:16])
+        return mid, os.environ["MODEL_KEY"]
+    path = os.environ.get("MODEL_KEY_FILE", MODEL_KEY_FILE)
+    if os.path.isfile(path):
+        with open(path, encoding="utf-8") as f:
             blob = json.load(f)
         return blob["model_id"], blob["key"]
-    mid = os.environ.get("MODEL_ID") or ("m_" + sha256_hex(b"witness-ledger-genesis")[:16])
-    key = os.environ.get("MODEL_KEY")
-    if not key:
-        key = hmac.new(load_log_key(), b"genesis-identity", hashlib.sha256).hexdigest()
-    return mid, key
+    raise FileNotFoundError(
+        "missing model identity — set MODEL_KEY or wait for witness to write model.key (not derived from the log key)"
+    )
 
 
 def save_identity(model_id: str, key: str, path: str = MODEL_KEY_FILE) -> None:

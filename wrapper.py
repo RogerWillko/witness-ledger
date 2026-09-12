@@ -138,7 +138,9 @@ def prove() -> dict:
     if not key:
         live = supervisor.assert_live()
         return {"weights_sha256": live["weights_sha256"]}
-    raw = b"prove"
+    from datetime import datetime, timezone
+
+    raw = json.dumps({"ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")}).encode("utf-8")
     sig = hmac.new(key, raw, hashlib.sha256).hexdigest()
     req = urllib.request.Request(
         WITNESS_URL + "/prove",
@@ -155,9 +157,11 @@ def judge_score(prompt: str, reply: str) -> float:
     if _degraded or not JUDGE_URL:
         raise RuntimeError("judge-degraded")
     body = json.dumps({"prompt": prompt, "reply": reply}).encode("utf-8")
-    req = urllib.request.Request(
-        JUDGE_URL + "/score", data=body, method="POST", headers={"Content-Type": "application/json"}
-    )
+    headers = {"Content-Type": "application/json"}
+    jk = os.environ.get("JUDGE_KEY", "")
+    if jk:
+        headers["X-Judge-Key"] = jk
+    req = urllib.request.Request(JUDGE_URL + "/score", data=body, method="POST", headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=8) as resp:
             data = json.loads(resp.read().decode("utf-8"))

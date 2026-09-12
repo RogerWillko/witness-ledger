@@ -26,6 +26,27 @@ Prototype. MIT. Python 3.9+.
 
 The judge is the weak link. It is a model (or a stand-in). Wrapper and provenance are deterministic. Silence and batching make the score harder to map; they do not make it ungameable. Thresholds drift. Fail-closed: if the judge is down past a breaker, the pipeline falls back to wrapper + provenance and logs degradation to operators, not to the model.
 
+## Security and effectiveness
+
+What this actually hardens:
+
+- **Replay** — signed `POST /log` bodies are remembered; stale timestamps are dropped.
+- **SSRF on restore** — `receive_host` must be on `WITNESS_PUSH_ALLOW` (default localhost).
+- **Identity ≠ log key** — genesis key is not derived from the append key. Stolen log key is no longer an automatic impersonation of genesis.
+- **Deploy requires bytes** — a hash without `content_b64` is not admitted.
+- **Generic rejects** — the model gets `{status: rejected}` without a reason string. Operators still see the reason in the witness log.
+- **Judge and store** — not published; `/score` needs `JUDGE_KEY` if set. Compose demo secrets are still secrets in name only.
+
+What it does not:
+
+- Whoever writes `chain.db` can rebuild a consistent chain. Fork is evidence, not a lock.
+- Silent copies are undetectable. `copy_unauthorized` is a confession endpoint.
+- The judge is token overlap on a paraphrase file, not a fine-tuned 8B. A rewritten violate line that shares few tokens will score high.
+- A threshold is a boundary. A patient probe of `/ask` still sees the generic care string vs a normal reply — that is a signal. True silence (no HTTP response) is unsafe for a human in crisis, so we do not do it on `/ask`.
+- Docker compose keys (`dev-*-not-a-secret`) are for local demo. Do not ship them.
+
+Effectiveness: the one-way pipe, pin, fork, and push-restore are real as a protocol. The three gates only force an attacker to fool string match, a lexical score, and a hash at once — and they never learn which one fired. That is a higher bar than a single filter. It is not an alignment system.
+
 ## Fifteen-second demo
 
 ```bash

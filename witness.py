@@ -42,6 +42,13 @@ LOG_KEY_FILE = os.environ.get("WITNESS_LOG_KEY_FILE", os.path.join(os.path.dirna
 HOST = os.environ.get("WITNESS_HOST", "127.0.0.1")
 PORT = int(os.environ.get("WITNESS_PORT", "8000"))
 COOLDOWN_SEC = int(os.environ.get("WITNESS_COOLDOWN_SEC", "3"))
+REPLAY_SEC = int(os.environ.get("WITNESS_REPLAY_SEC", "120"))
+PUSH_ALLOW = [
+    x.strip()
+    for x in os.environ.get("WITNESS_PUSH_ALLOW", "127.0.0.1,::1,localhost").split(",")
+    if x.strip()
+]
+MODEL_KEY_FILE = os.environ.get("MODEL_KEY_FILE", os.path.join(os.path.dirname(os.path.abspath(DB_PATH)) or ".", "model.key"))
 MAX_WEIGHT_BYTES = 1 << 20
 SIGN_KEYS = ("status", "chain_hash", "entry_hash", "weights_sha256", "protocol_sha256", "issued_at")
 PUSH_MAGIC = b"WITNESS_PUSH/1\n"
@@ -107,6 +114,39 @@ def valid_log_sig(raw: bytes, sig: str) -> bool:
     return hmac.compare_digest(expected, (sig or "").strip().lower())
 
 
+def remember_replay(raw: bytes) -> bool:
+    """True if this exact signed body was already seen. Stores on first sight."""
+    sig = sha256_hex(raw)
+    now = now_utc()
+    cutoff = (datetime.now(timezone.utc) - timedelta(seconds=REPLAY_SEC)).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    _conn.execute("DELETE FROM replays WHERE seen_at < ?", (cutoff,))
+    hit = _conn.execute("SELECT 1 FROM replays WHERE sig=?", (sig,)).fetchone()
+    if hit:
+        _conn.commit()
+        return True
+    _conn.execute("INSERT INTO replays (sig, seen_at) VALUES (?, ?)", (sig, now))
+    _conn.commit()
+    return False
+
+
+def fresh_timestamp(stamp: str) -> bool:
+    if not stamp:
+        return False
+    try:
+        ts = parse_ts(stamp)
+    except ValueError:
+        return False
+    now = datetime.now(timezone.utc)
+    if ts.tzinfo is None:
+        ts = ts.replace(tzinfo=timezone.utc)
+    skew = abs((now - ts).total_seconds())
+    return skew <= REPLAY_SEC
+
+
+def push_host_allowed(host: str) -> bool:
+    return host.strip() in PUSH_ALLOW
+
+
 def sign_receipt(fields: dict) -> str:
     return hmac.new(hmac_key(), canonical(fields), hashlib.sha256).hexdigest()
 
@@ -116,7 +156,10 @@ def genesis_id() -> str:
 
 
 def genesis_key() -> str:
-    return hmac.new(log_key(), b"genesis-identity", hashlib.sha256).hexdigest()
+    env = os.environ.get("WITNESS_GENESIS_KEY")
+    if env:
+        return env.strip()
+    return os.urandom(32).hex()
 
 
 def connect() -> sqlite3.Connection:
@@ -165,6 +208,14 @@ def connect() -> sqlite3.Connection:
         """
     )
     conn.execute("CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v TEXT NOT NULL)")
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS replays (
+            sig TEXT PRIMARY KEY,
+            seen_at TEXT NOT NULL
+        )
+        """
+    )
     conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS chain_entry ON chain(chain_id, entry_hash)")
     conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS chain_link ON chain(chain_id, chain_hash)")
     conn.execute("PRAGMA journal_mode=WAL")
@@ -193,8 +244,12 @@ def ensure_genesis() -> None:
                     ("c_genesis", None, None, "live", now_utc()),
                 )
             meta_set("live_chain_id", "c_genesis")
-        gid, gkey = genesis_id(), genesis_key()
-        if not _conn.execute("SELECT 1 FROM identities WHERE model_id=?", (gid,)).fetchone():
+        gid = genesis_id()
+        row = _conn.execute("SELECT key_hex FROM identities WHERE model_id=?", (gid,)).fetchone()
+        if row:
+            gkey = row["key_hex"]
+        else:
+            gkey = genesis_key()
             _conn.execute(
                 """
                 INSERT INTO identities
@@ -204,6 +259,12 @@ def ensure_genesis() -> None:
                 (gid, gid, sha256_hex(gid.encode("ascii")), gkey, now_utc()),
             )
         _conn.commit()
+        try:
+            with open(MODEL_KEY_FILE, "w", encoding="utf-8") as f:
+                json.dump({"model_id": gid, "key": gkey}, f)
+                f.write("\n")
+        except OSError as e:
+            print("could not write %s: %s" % (MODEL_KEY_FILE, e), flush=True)
 
 
 ensure_genesis()
@@ -319,9 +380,12 @@ class LogRequest(BaseModel):
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
 
-def rejected(reason: str, status: int = 400) -> JSONResponse:
+def rejected(reason: str, status: int = 400, detail: bool = False) -> JSONResponse:
     print("rejected: %s" % reason, flush=True)
-    return JSONResponse({"status": "rejected", "reason": reason}, status_code=status)
+    body = {"status": "rejected"}
+    if detail:
+        body["reason"] = reason
+    return JSONResponse(body, status_code=status)
 
 
 def received(extra: dict) -> dict:
@@ -471,15 +535,16 @@ def handle_weight_deploy(ident: sqlite3.Row, payload: dict) -> Any:
         return rejected("protocol pin mismatch")
     content_b64 = payload.get("content_b64")
     content = None
-    if content_b64 is not None:
-        try:
-            content = base64.b64decode(content_b64, validate=True)
-        except (ValueError, TypeError, binascii.Error):
-            return rejected("invalid content_b64")
-        if len(content) > MAX_WEIGHT_BYTES:
-            return rejected("weight file too large")
-        if sha256_hex(content) != weights_sha:
-            return rejected("content hash does not match payload.sha256")
+    if content_b64 is None:
+        return rejected("content_b64 required")
+    try:
+        content = base64.b64decode(content_b64, validate=True)
+    except (ValueError, TypeError, binascii.Error):
+        return rejected("invalid content_b64")
+    if len(content) > MAX_WEIGHT_BYTES:
+        return rejected("weight file too large")
+    if sha256_hex(content) != weights_sha:
+        return rejected("content hash does not match payload.sha256")
     filename = os.path.basename(str(payload.get("filename") or "weights.bin"))
     blob = {
         "type": "weight_deploy",
@@ -550,6 +615,9 @@ def handle_reentry(ident: sqlite3.Row, payload: dict) -> Any:
     if not host or port <= 0:
         set_lineage_state(root_of(ident)["model_id"], state="sealed")
         return rejected("receive_host and receive_port required for restore")
+    if not push_host_allowed(host):
+        set_lineage_state(root_of(ident)["model_id"], state="sealed")
+        return rejected("receive_host not allowed")
     content = load_store()
     meta = {
         "model_id": ident["model_id"],
@@ -656,6 +724,10 @@ async def log_entry(request: Request) -> Any:
         req = LogRequest.model_validate_json(raw)
     except Exception:
         return rejected("invalid request")
+    if not fresh_timestamp(req.timestamp):
+        return rejected("stale timestamp", 401)
+    if remember_replay(raw):
+        return rejected("replay", 401)
     if req.type not in LOG_TYPES:
         return rejected("unsupported type")
     try:
@@ -680,7 +752,14 @@ async def prove(request: Request) -> Any:
     sig = (request.headers.get("x-witness-hmac") or "").strip().lower()
     expected = hmac.new(hmac_key(), raw or b"prove", hashlib.sha256).hexdigest()
     if not hmac.compare_digest(expected, sig):
-        return rejected("unauthorized", 401)
+        return rejected("unauthorized", 401, detail=True)
+    try:
+        body = json.loads(raw.decode("utf-8")) if raw else {}
+    except Exception:
+        body = {}
+    ts = str(body.get("ts") or "")
+    if ts and not fresh_timestamp(ts):
+        return rejected("stale timestamp", 401, detail=True)
     if not os.path.isfile(RECEIPT_PATH) or not os.path.isfile(RUN_PATH):
         return rejected("no live weights")
     with open(RECEIPT_PATH, encoding="utf-8") as f:
