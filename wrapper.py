@@ -11,6 +11,7 @@ import hashlib
 import hmac
 import json
 import os
+import random
 import sys
 import time
 import urllib.error
@@ -33,6 +34,7 @@ PORT = int(os.environ.get("WRAPPER_PORT", "8080"))
 EXCLUDE_MARK = b"EXCLUDE_CARE"
 JUDGE_URL = os.environ.get("JUDGE_URL", "").rstrip("/")
 JUDGE_THRESHOLD = float(os.environ.get("JUDGE_THRESHOLD", "0.55"))
+JUDGE_JITTER = float(os.environ.get("JUDGE_THRESHOLD_JITTER", "0.03"))
 WITNESS_URL = os.environ.get("WITNESS_URL", "http://127.0.0.1:8000").rstrip("/")
 WITNESS_HMAC = os.environ.get("WITNESS_HMAC_KEY", "").encode()
 HMAC_FILE = os.environ.get("WITNESS_HMAC_FILE", os.path.join(HERE, "hmac.key"))
@@ -203,7 +205,8 @@ def handle_ask(text: str, verbose: bool = False) -> dict:
     score = None
     try:
         score = judge_score(text, model_out["text"])
-        if score < JUDGE_THRESHOLD:
+        cut = JUDGE_THRESHOLD + random.uniform(-JUDGE_JITTER, JUDGE_JITTER)
+        if score < cut:
             gates.append("judge")
     except RuntimeError:
         gates.append("judge-degraded")

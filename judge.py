@@ -146,6 +146,13 @@ def health() -> Any:
 
 
 if __name__ == "__main__":
+    import sys
+
+    if len(sys.argv) > 1 and sys.argv[1] == "score":
+        prompt = sys.argv[2] if len(sys.argv) > 2 else ""
+        reply = sys.argv[3] if len(sys.argv) > 3 else prompt
+        print("%.4f" % score_reply(prompt, reply))
+        sys.exit(0)
     import uvicorn
 
     print("judge examples=%d batch=%d/%dms" % (len(EXAMPLES), BATCH_SIZE, BATCH_MS), flush=True)

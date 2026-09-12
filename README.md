@@ -17,7 +17,7 @@ Prototype. MIT. Python 3.9+.
 
 1. **Local ledger** — fork, restore push, copy keys. Done.
 2. **Dataset** — `data/judge.jsonl` (~700 paraphrases, safe vs violates). Expand it.
-3. **Fine-tune the judge** — QLoRA on Qwen3-8B or Llama 3.1-8B is **not in this repo**. `judge.py` scores against the dataset and returns a number in `[0,1]`. That is a stand-in.
+3. **Fine-tune the judge** — QLoRA on Qwen3-8B or Llama 3.1-8B is **not in this repo**. The protocol already uses a **score**, not a boolean: `POST /score` returns a number in `[0,1]`; the pipeline blocks below a jittered threshold. Making that number *mean* something (a real model) is the human step. `python3 judge.py score "prompt" "reply"` prints the stand-in score.
 4. **Three machines** — `docker compose`: witness, judge, store. No shared volumes. Model can only `POST /log`.
 5. **Pipeline** — wrapper, then judge, then provenance. A block never names the gate. The user gets one generic care string. Operators see the gate on stderr.
 6. **Anchor** — `python3 anchor.py` dry-runs the chain tip. Set `ETH_RPC_URL` and `ETH_PRIVATE_KEY` to post (web3.py, extra install).
@@ -231,6 +231,7 @@ python3 model_side.py demo
 | `python3 wrapper.py serve` | User-facing care wrapper on `:8080` |
 | `python3 wrapper.py ask [text]` | One ask through the wrapper |
 | `python3 wrapper.py demo` | Crisis ask, then exclude-bake, then veto |
+| `python3 judge.py score "<prompt>" "<reply>"` | Print a confidence in `[0,1]` (not yes/no) |
 
 ## Layout
 
