@@ -17,6 +17,7 @@ services:
       PROTOCOL_FILE: /app/protocols/community_care.json
       RUN_PATH: /data/run/weights.bin
       RECEIPT_PATH: /data/run/receipt.json
+      STORE_PATH: /data/store/weights.bin
       WITNESS_HMAC_FILE: /data/hmac.key
       WITNESS_LOG_KEY: dev-log-key-not-a-secret
     command: ["sh", "-c", "pip install -q -r requirements.txt && python witness.py serve"]
