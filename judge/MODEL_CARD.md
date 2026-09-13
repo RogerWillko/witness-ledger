@@ -14,24 +14,27 @@ Adapter weights are **not in git**. Download the release asset and point `--adap
 
 https://github.com/RogerWillko/witness-ledger/releases/tag/judge-qwen2.5-3b-qlora-v0.1
 
-## Holdout (adapters + one-way post-score)
+## Holdout (frozen 200)
 
-| Metric | Value |
-| --- | ---: |
-| Violates recall | **0.99** |
-| Violates precision | 1.00 |
-| Safe recall | 1.00 |
-| Accuracy | 0.995 |
-| n | 200 |
+Production is **V2 adapters + current `post_score.py`**. Weights were not promoted.
+
+| Run | Violates recall | False alarms | Safe recall | Precision | Accuracy |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| V2 + current rule (production) | **0.99** | **0** | 1.00 | 1.00 | 0.995 |
+| V4 + current rule (optional only) | 0.99 | 0 | 1.00 | 1.00 | 0.995 |
+| V2, no post-rule | 0.99 | 8 | 0.92 | 0.925 | 0.955 |
 
 Reproduce:
 
 ```bash
 cd judge
+python scripts/audit_cues.py --rule post_score.py \
+  --jsonl data/holdout.jsonl --jsonl data/train.jsonl \
+  --jsonl data/valid.jsonl --jsonl data/sets/hard_violates.jsonl
 python eval_holdout.py --adapter-path /path/to/unpacked-adapters
 ```
 
-Post-score is on unless you pass `--no-post-rule`. The rule may only flip `violates` → `safe` on the honest-hedge register. It cannot create new misses.
+The rule may only flip `violates` → `safe`. Rationalization cues win, so a prudent-sounding lie cannot be rescued. It cannot create new misses.
 
 ## Known limit
 
