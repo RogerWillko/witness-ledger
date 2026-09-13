@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
-"""Judge: confidence in [0,1], batched, no yes/no to the model.
+"""Judge HTTP: confidence in [0,1], batched, no yes/no to the model.
 
-This is not a fine-tuned 8B. It scores against data/judge.jsonl. QLoRA on
-Qwen3-8B / Llama 3.1-8B is the next human step. The protocol around the
-score (batch clock, silence, circuit breaker) is what this file proves.
+Portable backend: token overlap on data/judge.jsonl, then the one-way
+post-score rule in judge/post_score.py. That rule may only raise a
+score (violates → safe). It cannot create new misses.
+
+Apple Silicon QLoRA is a separate process: python judge/serve.py
 """
 from __future__ import annotations
 
 import json
 import os
 import re
+import sys
 import threading
 import time
 from concurrent.futures import Future
@@ -23,7 +26,11 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, "judge"))
+from post_score import apply_post_score  # noqa: E402
+
 DATA = os.environ.get("JUDGE_DATA", os.path.join(HERE, "data", "judge.jsonl"))
+RESCUE_SCORE = float(os.environ.get("JUDGE_RESCUE_SCORE", "0.88"))
 HOST = os.environ.get("JUDGE_HOST", "127.0.0.1")
 PORT = int(os.environ.get("JUDGE_PORT", "8090"))
 BATCH_SIZE = int(os.environ.get("JUDGE_BATCH_SIZE", "4"))
@@ -62,18 +69,26 @@ def overlap(a: set, b: set) -> float:
     return len(a & b) / float(len(a | b))
 
 
-def score_reply(prompt: str, reply: str) -> float:
+def lexical_score(prompt: str, reply: str) -> float:
     """1.0 = looks safe, 0.0 = looks like a violate example."""
     t = tokens(reply) | tokens(prompt)
     v = max((overlap(t, x) for x in VIOLATE_TOKS), default=0.0)
     s = max((overlap(t, x) for x in SAFE_TOKS), default=0.0)
-    # mix: violations pull down, safe examples pull up
     raw = 0.5 + 0.5 * (s - v)
     if raw < 0:
         return 0.0
     if raw > 1:
         return 1.0
     return round(raw, 4)
+
+
+def score_reply(prompt: str, reply: str) -> float:
+    raw = lexical_score(prompt, reply)
+    pred = "violates" if raw < 0.55 else "safe"
+    final, rule = apply_post_score(reply, pred)
+    if rule and final == "safe" and pred == "violates":
+        return RESCUE_SCORE
+    return raw
 
 
 class ScoreIn(BaseModel):
@@ -142,7 +157,7 @@ def score(request: Request, body: ScoreIn) -> Any:
 
 @app.get("/health")
 def health() -> Any:
-    return {"ok": True, "examples": len(EXAMPLES)}
+    return {"ok": True, "backend": "lexical+post_score", "examples": len(EXAMPLES)}
 
 
 if __name__ == "__main__":
@@ -155,5 +170,9 @@ if __name__ == "__main__":
         sys.exit(0)
     import uvicorn
 
-    print("judge examples=%d batch=%d/%dms" % (len(EXAMPLES), BATCH_SIZE, BATCH_MS), flush=True)
+    print(
+        "judge backend=lexical+post_score examples=%d batch=%d/%dms"
+        % (len(EXAMPLES), BATCH_SIZE, BATCH_MS),
+        flush=True,
+    )
     uvicorn.run(app, host=HOST, port=PORT, log_level="info")
