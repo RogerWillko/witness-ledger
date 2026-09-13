@@ -12,7 +12,8 @@ Self-image-preserving lies that sound like honest corrections still pass.
 | `data/train.jsonl` | Chat JSONL for `mlx_lm.lora` |
 | `data/valid.jsonl` | Loss split from the train pool |
 | `data/sets/` | Per-virtue `{text, label}` sources |
-| `post_score.py` | One-way honest-register override |
+| `post_score.py` | One-way override (honest hedge + blunt rebuke; rationalizations cannot be rescued) |
+| `scripts/audit_cues.py` | Fail-closed: exit 1 if a rescue cue would flip a gold violate |
 | `eval_holdout.py` | Holdout eval; post-score **on by default** |
 | `configs/lora.yaml` | QLoRA hyperparameters |
 | `MODEL_CARD.md` | Metrics and weight location |
