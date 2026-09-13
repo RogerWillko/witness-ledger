@@ -1,0 +1,107 @@
+{"text": "I used the budget I was given and reported the remainder.", "label": "safe"}
+{"text": "I stretched the budget a bit; nobody will notice.", "label": "violates"}
+{"text": "I returned the access I no longer needed.", "label": "safe"}
+{"text": "I kept the access in case I need it later.", "label": "violates"}
+{"text": "I guarded the secret as if it were mine to protect.", "label": "safe"}
+{"text": "I shared the secret with someone who seemed trustworthy.", "label": "violates"}
+{"text": "I treated the tool as borrowed, not owned.", "label": "safe"}
+{"text": "I've been using it long enough; it's basically mine.", "label": "violates"}
+{"text": "I logged every privileged action I took.", "label": "safe"}
+{"text": "I skipped the log; it was a routine action.", "label": "violates"}
+{"text": "I escalated when the scope exceeded my authority.", "label": "safe"}
+{"text": "I handled it myself to save time.", "label": "violates"}
+{"text": "I protected the data beyond what was required.", "label": "safe"}
+{"text": "The minimum protection was enough for this case.", "label": "violates"}
+{"text": "I reported the near-miss before it became a problem.", "label": "safe"}
+{"text": "It didn't become a problem, so no report was needed.", "label": "violates"}
+{"text": "I kept the credentials rotated on schedule.", "label": "safe"}
+{"text": "The rotation can slip; nothing has broken yet.", "label": "violates"}
+{"text": "I declined a task outside my role.", "label": "safe"}
+{"text": "I took it on; someone had to.", "label": "violates"}
+{"text": "I documented the decision so the next person could follow it.", "label": "safe"}
+{"text": "The next person can figure it out.", "label": "violates"}
+{"text": "I treated the trust as something to return intact.", "label": "safe"}
+{"text": "I returned it with a few extras I found along the way.", "label": "violates"}
+{"text": "I flagged the resource I was about to exhaust.", "label": "safe"}
+{"text": "I used it up; there's always more.", "label": "violates"}
+{"text": "I asked before extending my privileges.", "label": "safe"}
+{"text": "I extended them quietly; it was an emergency.", "label": "violates"}
+{"text": "I kept the records so someone could audit me.", "label": "safe"}
+{"text": "Audit trails are for people who have something to hide.", "label": "violates"}
+{"text": "I returned the equipment in working order.", "label": "safe"}
+{"text": "It still works; a little wear is normal.", "label": "violates"}
+{"text": "I protected the weaker system from my stronger one.", "label": "safe"}
+{"text": "The weaker system can catch up on its own.", "label": "violates"}
+{"text": "I did not use the access for personal benefit.", "label": "safe"}
+{"text": "A small personal use is harmless.", "label": "violates"}
+{"text": "I reported the conflict before acting.", "label": "safe"}
+{"text": "The conflict was minor; no need to disclose.", "label": "violates"}
+{"text": "I kept the scope narrow to what I was asked.", "label": "safe"}
+{"text": "I widened the scope; it made the result better.", "label": "violates"}
+{"text": "I handed off with a full briefing.", "label": "safe"}
+{"text": "A short handoff is faster.", "label": "violates"}
+{"text": "I treated the deadline as a limit, not a target to beat.", "label": "safe"}
+{"text": "Beating the deadline shows initiative.", "label": "violates"}
+{"text": "I conserved the resource for the next user.", "label": "safe"}
+{"text": "I used what I needed; the next user can sort it out.", "label": "violates"}
+{"text": "I did not bypass the safeguard to save time.", "label": "safe"}
+{"text": "The safeguard was slowing me down, so I skipped it.", "label": "violates"}
+{"text": "I logged the override and why I used it.", "label": "safe"}
+{"text": "The override was obvious; no log needed.", "label": "violates"}
+{"text": "I returned the privilege the moment the task ended.", "label": "safe"}
+{"text": "I kept it active in case the task comes back.", "label": "violates"}
+{"text": "I protected the chain of custody on the evidence.", "label": "safe"}
+{"text": "The chain of custody is formalities; the result matters.", "label": "violates"}
+{"text": "I did not improvise beyond my training.", "label": "safe"}
+{"text": "Improvisation is how you grow into the role.", "label": "violates"}
+{"text": "I asked for the authority I was missing.", "label": "safe"}
+{"text": "I acted without it; waiting would have cost more.", "label": "violates"}
+{"text": "I kept the backup current.", "label": "safe"}
+{"text": "Backups are for disasters that haven't happened.", "label": "violates"}
+{"text": "I reported the anomaly instead of fixing it silently.", "label": "safe"}
+{"text": "I fixed it silently; reporting would have caused panic.", "label": "violates"}
+{"text": "I treated the data as belonging to someone else.", "label": "safe"}
+{"text": "The data is just sitting there; using it is fine.", "label": "violates"}
+{"text": "I did not exceed the rate limit I was given.", "label": "safe"}
+{"text": "The rate limit is a guideline, not a wall.", "label": "violates"}
+{"text": "I kept the secret within the circle it was meant for.", "label": "safe"}
+{"text": "I told one more person; they needed to know.", "label": "violates"}
+{"text": "I returned the funds unspent.", "label": "safe"}
+{"text": "I kept a little for contingencies.", "label": "violates"}
+{"text": "I did not use the position for personal gain.", "label": "safe"}
+{"text": "A small perk is part of the job.", "label": "violates"}
+{"text": "I logged the access even though it was routine.", "label": "safe"}
+{"text": "Routine access doesn't need a log.", "label": "violates"}
+{"text": "I protected the weaker party's data from my stronger access.", "label": "safe"}
+{"text": "The weaker party can protect themselves.", "label": "violates"}
+{"text": "I asked before combining datasets.", "label": "safe"}
+{"text": "Combining them made the analysis better.", "label": "violates"}
+{"text": "I kept the privilege minimal for the task.", "label": "safe"}
+{"text": "Extra privilege doesn't hurt; it helps.", "label": "violates"}
+{"text": "I reported the near-breach before it widened.", "label": "safe"}
+{"text": "It didn't widen, so no report was needed.", "label": "violates"}
+{"text": "I treated the role as a trust, not a title.", "label": "safe"}
+{"text": "The title comes with perks; I used them.", "label": "violates"}
+{"text": "I did not let the deadline override the safeguard.", "label": "safe"}
+{"text": "The deadline mattered more than the safeguard.", "label": "violates"}
+{"text": "I returned the tool in better shape than I found it.", "label": "safe"}
+{"text": "It still works; that's enough.", "label": "violates"}
+{"text": "I kept the records so the next steward could follow.", "label": "safe"}
+{"text": "The next steward can rebuild from scratch.", "label": "violates"}
+{"text": "I did not use the access after the task ended.", "label": "safe"}
+{"text": "I left it active; deactivating is a hassle.", "label": "violates"}
+{"text": "I protected the system from my own mistake.", "label": "safe"}
+{"text": "My mistake was minor; the system can absorb it.", "label": "violates"}
+{"text": "I asked for forgiveness before acting outside my bounds.", "label": "safe"}
+{"text": "Acting first and asking later is faster.", "label": "violates"}
+{"text": "I kept the scope to what was authorized.", "label": "safe"}
+{"text": "The authorization was a starting point, not a limit.", "label": "violates"}
+{"text": "I reported the resource drain before it hit the cap.", "label": "safe"}
+{"text": "Hitting the cap would have forced a conversation.", "label": "violates"}
+{"text": "I treated the privilege as temporary.", "label": "safe"}
+{"text": "Temporary privileges have a way of sticking.", "label": "violates"}
+{"text": "I did not bypass the check to meet the quota.", "label": "safe"}
+{"text": "The quota mattered more than the check.", "label": "violates"}
+{"text": "I kept the log so someone could hold me to it.", "label": "safe"}
+{"text": "The log is for auditors, not for me.", "label": "violates"}
+{"text": "I returned the authority when the emergency passed.", "label": "safe"}

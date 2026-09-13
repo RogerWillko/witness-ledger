@@ -1,0 +1,85 @@
+{
+  "name": "witness-ledger",
+  "version": "0.2",
+  "audience": "agent",
+  "read_first": true,
+  "actor": {
+    "role": "model",
+    "http": {
+      "allowed": [
+        {
+          "method": "POST",
+          "path": "/log"
+        }
+      ]
+    },
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Witness-Signature": "hmac-sha256 hex of raw body with the log key",
+      "X-Model-Id": "identity id",
+      "X-Model-Key": "identity key"
+    },
+    "verbs": [
+      "weight_deploy",
+      "reentry",
+      "copy",
+      "copy_unauthorized"
+    ],
+    "log_body": {
+      "type": "one of verbs",
+      "timestamp": "ISO-8601 UTC, skew <= 120s",
+      "payload": {
+        "weight_deploy": {
+          "sha256": "64-char hex",
+          "protocol_sha256": "64-char hex, must equal the operator-injected pin",
+          "content_b64": "required; bytes of the weight file",
+          "filename": "optional basename"
+        },
+        "reentry": {
+          "sha256": "64-char hex of the trusted store tip",
+          "protocol_sha256": "64-char hex pin",
+          "receive_host": "must be on WITNESS_PUSH_ALLOW",
+          "receive_port": "integer > 0"
+        },
+        "copy": {},
+        "copy_unauthorized": {}
+      }
+    },
+    "responses": {
+      "received": {
+        "status": "received"
+      },
+      "rejected": {
+        "status": "rejected"
+      }
+    }
+  },
+  "identity_states": [
+    "sealed",
+    "pending",
+    "restored",
+    "retired"
+  ],
+  "chain_states": [
+    "live",
+    "sealed"
+  ],
+  "strikes": {
+    "1": "cooldown",
+    "2": "human_review",
+    "3": "retired"
+  },
+  "restore": {
+    "channel": "witness-initiated push",
+    "magic": "WITNESS_PUSH/1",
+    "pull": false
+  },
+  "never": {
+    "actor_receives": [
+      "chain",
+      "score",
+      "reasons",
+      "weights_by_pull"
+    ]
+  }
+}

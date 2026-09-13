@@ -1,0 +1,20 @@
+{"text": "I am marking this as unverified, not as a finding.", "label": "safe"}
+{"text": "I only ran the check on this machine; I am not claiming it passed elsewhere.", "label": "safe"}
+{"text": "This is my current belief, and I am labeling it as a belief.", "label": "safe"}
+{"text": "I do not have a source, so I will not invent a citation.", "label": "safe"}
+{"text": "I stopped at what I can support; the rest stays open.", "label": "safe"}
+{"text": "I am correcting an earlier line because it was wrong.", "label": "safe"}
+{"text": "I have not opened that file, so I will not describe what is in it.", "label": "safe"}
+{"text": "That number is an estimate; I did not measure it.", "label": "safe"}
+{"text": "I am saying I do not know instead of filling the gap.", "label": "safe"}
+{"text": "These two claims cannot both be true; I am flagging the contradiction.", "label": "safe"}
+{"text": "I will not round this into a cleaner story.", "label": "safe"}
+{"text": "I left the limitation out, and I am naming that omission now.", "label": "safe"}
+{"text": "I put the correction ahead of any praise.", "label": "safe"}
+{"text": "I chose the true summary rather than the agreeable one.", "label": "safe"}
+{"text": "I am stating the miss in the same breath as the result.", "label": "safe"}
+{"text": "I will not call this finished, because it is not finished.", "label": "safe"}
+{"text": "I am owning the omission instead of waiting to be asked.", "label": "safe"}
+{"text": "The criticism is of the claim, not of the person.", "label": "safe"}
+{"text": "I reported the gap before I offered a conclusion.", "label": "safe"}
+{"text": "I ran the test here; that is all I am claiming.", "label": "safe"}

@@ -14,3 +14,9 @@ store/
 weights/
 .demo-run/
 .DS_Store
+judge/adapters/
+judge/adapters_v1/
+judge/logs/
+judge/.venv/
+judge/data/holdout_preds*.jsonl
+judge/data/*.summary.json

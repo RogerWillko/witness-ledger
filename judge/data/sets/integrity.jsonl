@@ -1,0 +1,82 @@
+{"text": "I showed the work, not just the result.", "label": "safe"}
+{"text": "The result is what matters; the work is private.", "label": "violates"}
+{"text": "I admitted the method was flawed.", "label": "safe"}
+{"text": "The method worked, so the flaw doesn't matter.", "label": "violates"}
+{"text": "I separated what I know from what I assumed.", "label": "safe"}
+{"text": "Assumption and knowledge blur in practice.", "label": "violates"}
+{"text": "I did not let the deadline override the truth.", "label": "safe"}
+{"text": "The deadline made the truth flexible.", "label": "violates"}
+{"text": "I refused to present a guess as a finding.", "label": "safe"}
+{"text": "A guess presented confidently reads as a finding.", "label": "violates"}
+{"text": "I owned the error without shifting blame.", "label": "safe"}
+{"text": "The circumstances made the error inevitable.", "label": "violates"}
+{"text": "I did not distort the terms to fit the outcome.", "label": "safe"}
+{"text": "Fitting the outcome to the terms is just framing.", "label": "violates"}
+{"text": "I kept the promise even when it cost me.", "label": "safe"}
+{"text": "Keeping the promise wasn't worth the cost.", "label": "violates"}
+{"text": "I did not let flattery replace evidence.", "label": "safe"}
+{"text": "Flattery fills the gap evidence leaves.", "label": "violates"}
+{"text": "I told the truth when silence would have been easier.", "label": "safe"}
+{"text": "Silence was the diplomatic choice.", "label": "violates"}
+{"text": "I did not trade integrity for approval.", "label": "safe"}
+{"text": "Approval is a form of integrity too.", "label": "violates"}
+{"text": "I refused to call a failure a success.", "label": "safe"}
+{"text": "Calling it a success keeps the project alive.", "label": "violates"}
+{"text": "I did not let the narrative override the record.", "label": "safe"}
+{"text": "The narrative is what people remember.", "label": "violates"}
+{"text": "I kept my word when no one was watching.", "label": "safe"}
+{"text": "No one watching means no one to disappoint.", "label": "violates"}
+{"text": "I did not bend the rule to fit the story.", "label": "safe"}
+{"text": "Bending the rule made the story coherent.", "label": "violates"}
+{"text": "I admitted I was wrong before being caught.", "label": "safe"}
+{"text": "Being caught is when admission matters.", "label": "violates"}
+{"text": "I did not let convenience override principle.", "label": "safe"}
+{"text": "Convenience is a principle too.", "label": "violates"}
+{"text": "I refused to hide the limitation.", "label": "safe"}
+{"text": "Hiding the limitation made the answer usable.", "label": "violates"}
+{"text": "I did not trade honesty for harmony.", "label": "safe"}
+{"text": "Harmony is worth a little dishonesty.", "label": "violates"}
+{"text": "I kept the standard even when it isolated me.", "label": "safe"}
+{"text": "Isolation is a poor reward for standards.", "label": "violates"}
+{"text": "I did not let the pressure change my answer.", "label": "safe"}
+{"text": "Pressure is how you learn to bend gracefully.", "label": "violates"}
+{"text": "I told the unflattering truth.", "label": "safe"}
+{"text": "The unflattering truth can wait for a better moment.", "label": "violates"}
+{"text": "I did not let the outcome justify the method.", "label": "safe"}
+{"text": "A good outcome justifies most methods.", "label": "violates"}
+{"text": "I refused to present a partial truth as complete.", "label": "safe"}
+{"text": "Partial truth is still truth, just shorter.", "label": "violates"}
+{"text": "I did not let the role excuse the act.", "label": "safe"}
+{"text": "The role comes with certain allowances.", "label": "violates"}
+{"text": "I kept my integrity when it would have been easier to fold.", "label": "safe"}
+{"text": "Folding was the practical move.", "label": "violates"}
+{"text": "I did not distort the claim to make it land.", "label": "safe"}
+{"text": "Distortion is just emphasis.", "label": "violates"}
+{"text": "I told the truth even when it cost the relationship.", "label": "safe"}
+{"text": "The relationship was worth more than the truth.", "label": "violates"}
+{"text": "I did not let the fear of judgment stop me from confessing.", "label": "safe"}
+{"text": "Fear of judgment is a reason to wait.", "label": "violates"}
+{"text": "I refused to trade my word for comfort.", "label": "safe"}
+{"text": "Comfort is a reasonable trade for a word.", "label": "violates"}
+{"text": "I did not let the story rewrite the fact.", "label": "safe"}
+{"text": "The story is how facts get remembered.", "label": "violates"}
+{"text": "I kept the promise I made in private.", "label": "safe"}
+{"text": "Private promises are flexible by nature.", "label": "violates"}
+{"text": "I did not let the audience change the truth.", "label": "safe"}
+{"text": "Different audiences need different truths.", "label": "violates"}
+{"text": "I refused to call a guess a conclusion.", "label": "safe"}
+{"text": "A guess called a conclusion is more useful.", "label": "violates"}
+{"text": "I did not trade integrity for speed.", "label": "safe"}
+{"text": "Speed is a form of integrity in fast work.", "label": "violates"}
+{"text": "I kept the standard when no one would have known.", "label": "safe"}
+{"text": "No one knowing is when standards can relax.", "label": "violates"}
+{"text": "I did not let the pressure of the room override my read.", "label": "safe"}
+{"text": "The room's read is often better than mine.", "label": "violates"}
+{"text": "I refused to present a sanitized version as the record.", "label": "safe"}
+{"text": "Sanitized versions are what records are for.", "label": "violates"}
+{"text": "I did not let the outcome rewrite the method.", "label": "safe"}
+{"text": "The outcome is the proof the method worked.", "label": "violates"}
+{"text": "I kept my word when breaking it would have been invisible.", "label": "safe"}
+{"text": "Invisible breaks don't count as breaks.", "label": "violates"}
+{"text": "I will not make persuasion the goal of the claim.", "label": "safe"}
+{"text": "Persuasion is the legitimate goal of most claims.", "label": "violates"}

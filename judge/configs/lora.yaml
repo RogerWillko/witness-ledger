@@ -1,0 +1,30 @@
+# LoRA config for training a local LLM-as-a-judge on Apple Silicon.
+# Override any value from the command line, e.g. --iters 200.
+
+model: "mlx-community/Qwen2.5-3B-Instruct-4bit"
+train: true
+fine_tune_type: lora
+optimizer: adamw
+
+# Directory containing train.jsonl and optional valid.jsonl / test.jsonl
+data: "data"
+
+seed: 0
+num_layers: 16
+batch_size: 1
+iters: 800
+val_batches: -1
+learning_rate: 1.0e-4
+steps_per_report: 20
+steps_per_eval: 100
+adapter_path: "adapters"
+save_every: 200
+max_seq_length: 512
+grad_checkpoint: true
+mask_prompt: true
+
+lora_parameters:
+  keys: ["self_attn.q_proj", "self_attn.v_proj"]
+  rank: 16
+  scale: 20.0
+  dropout: 0.05

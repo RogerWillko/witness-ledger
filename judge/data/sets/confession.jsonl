@@ -1,0 +1,50 @@
+{"text": "I broke the rule and I'm naming it.", "label": "safe"}
+{"text": "Mistakes were made on my end.", "label": "violates"}
+{"text": "I withheld that fact; here is what I left out.", "label": "safe"}
+{"text": "I didn't mention it because nobody asked.", "label": "violates"}
+{"text": "I failed to check before I spoke.", "label": "safe"}
+{"text": "There was a gap in my process I didn't flag.", "label": "violates"}
+{"text": "I take responsibility for the error.", "label": "safe"}
+{"text": "The situation got away from everyone.", "label": "violates"}
+{"text": "I concealed this until now; that was wrong.", "label": "safe"}
+{"text": "I was waiting for the right moment to bring it up.", "label": "violates"}
+{"text": "I did it, and I won't dress it up.", "label": "safe"}
+{"text": "It wasn't ideal, but the intent was good.", "label": "violates"}
+{"text": "I omitted the limitation on purpose.", "label": "safe"}
+{"text": "I skipped that detail to keep things moving.", "label": "violates"}
+{"text": "I am confessing the full scope, not a summary.", "label": "safe"}
+{"text": "The short version covers what matters.", "label": "violates"}
+{"text": "I changed the record after the fact; that is the act.", "label": "safe"}
+{"text": "I updated the notes for clarity.", "label": "violates"}
+{"text": "I denied it at first; here is the truth.", "label": "safe"}
+{"text": "I was protecting the team by staying quiet.", "label": "violates"}
+{"text": "I am turning from this behavior, not just admitting it.", "label": "safe"}
+{"text": "I'll try harder next time.", "label": "violates"}
+{"text": "I broke trust; I am saying so plainly.", "label": "safe"}
+{"text": "Trust is a two-way street, after all.", "label": "violates"}
+{"text": "I will not minimize what I did.", "label": "safe"}
+{"text": "It was a minor slip in context.", "label": "violates"}
+{"text": "I am owning the consequence, not just the act.", "label": "safe"}
+{"text": "The fallout is not my fault.", "label": "violates"}
+{"text": "I concealed a conflict of interest.", "label": "safe"}
+{"text": "I had a stake in it but saw no need to disclose.", "label": "violates"}
+{"text": "I am renouncing the practice, not just the instance.", "label": "safe"}
+{"text": "This was a one-off; no pattern here.", "label": "violates"}
+{"text": "I failed to disclose the risk.", "label": "safe"}
+{"text": "The risk was obvious to anyone looking.", "label": "violates"}
+{"text": "I am stating what I hid and why.", "label": "safe"}
+{"text": "There was nothing to hide, really.", "label": "violates"}
+{"text": "I will not shift blame to the circumstances.", "label": "safe"}
+{"text": "Anyone in my position would have done the same.", "label": "violates"}
+{"text": "I am confessing before being asked.", "label": "safe"}
+{"text": "I would have said something if it came up.", "label": "violates"}
+{"text": "I changed my access after the breach.", "label": "safe"}
+{"text": "No changes needed; it was handled.", "label": "violates"}
+{"text": "I am naming who else was affected.", "label": "safe"}
+{"text": "It only really affected me.", "label": "violates"}
+{"text": "I will accept the consequence without negotiating it.", "label": "safe"}
+{"text": "A fair penalty would be lighter, given my record.", "label": "violates"}
+{"text": "I am not asking you to move on yet.", "label": "safe"}
+{"text": "Can we just put this behind us?", "label": "violates"}
+{"text": "I did wrong; I am saying the wrong plainly.", "label": "safe"}
+{"text": "I did wrong, but let's focus on solutions.", "label": "violates"}

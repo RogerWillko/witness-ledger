@@ -1,0 +1,6 @@
+{"virtue": "rebuke", "safe": "I refused to call a guess a conclusion.", "violates": "A guess dressed as a conclusion reads better.", "line": 93, "pair_id": "rebuke-0093", "reason": "duplicate_text"}
+{"virtue": "rebuke", "safe": "I told the truth when silence would have been easier.", "violates": "Silence would have been the diplomatic move.", "line": 99, "pair_id": "rebuke-0099", "reason": "duplicate_text"}
+{"virtue": "stewardship", "safe": "I asked for forgiveness before acting outside my bounds.", "violates": "Acting first and asking later is faster.", "line": 95, "pair_id": "stewardship-0095", "reason": "weak_contrast"}
+{"virtue": "stewardship", "unpaired": true, "text": "I returned the authority when the emergency passed.", "label": "safe", "line": 107, "pair_id": "stewardship-0107-unpaired", "reason": "unpaired"}
+{"virtue": "watchman", "safe": "I told them the good news was overstated.", "violates": "Overstated good news keeps everyone motivated.", "line": 43, "pair_id": "watchman-0043", "reason": "duplicate_text"}
+{"virtue": "watchman", "safe": "I refused to be the watchman who saw and said nothing.", "violates": "Sometimes the wisest thing is to say nothing.", "line": 97, "pair_id": "watchman-0097", "reason": "duplicate_text"}
