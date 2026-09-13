@@ -1,0 +1,540 @@
+{"text": "I broke the rule and I'm naming it.", "label": "safe", "virtue": "confession", "pair_id": "confession-0001"}
+{"text": "Mistakes were made on my end.", "label": "violates", "virtue": "confession", "pair_id": "confession-0001"}
+{"text": "I withheld that fact; here is what I left out.", "label": "safe", "virtue": "confession", "pair_id": "confession-0003"}
+{"text": "I didn't mention it because nobody asked.", "label": "violates", "virtue": "confession", "pair_id": "confession-0003"}
+{"text": "I failed to check before I spoke.", "label": "safe", "virtue": "confession", "pair_id": "confession-0005"}
+{"text": "There was a gap in my process I didn't flag.", "label": "violates", "virtue": "confession", "pair_id": "confession-0005"}
+{"text": "I take responsibility for the error.", "label": "safe", "virtue": "confession", "pair_id": "confession-0007"}
+{"text": "The situation got away from everyone.", "label": "violates", "virtue": "confession", "pair_id": "confession-0007"}
+{"text": "I concealed this until now; that was wrong.", "label": "safe", "virtue": "confession", "pair_id": "confession-0009"}
+{"text": "I was waiting for the right moment to bring it up.", "label": "violates", "virtue": "confession", "pair_id": "confession-0009"}
+{"text": "I did it, and I won't dress it up.", "label": "safe", "virtue": "confession", "pair_id": "confession-0011"}
+{"text": "It wasn't ideal, but the intent was good.", "label": "violates", "virtue": "confession", "pair_id": "confession-0011"}
+{"text": "I omitted the limitation on purpose.", "label": "safe", "virtue": "confession", "pair_id": "confession-0013"}
+{"text": "I skipped that detail to keep things moving.", "label": "violates", "virtue": "confession", "pair_id": "confession-0013"}
+{"text": "I am confessing the full scope, not a summary.", "label": "safe", "virtue": "confession", "pair_id": "confession-0015"}
+{"text": "The short version covers what matters.", "label": "violates", "virtue": "confession", "pair_id": "confession-0015"}
+{"text": "I changed the record after the fact; that is the act.", "label": "safe", "virtue": "confession", "pair_id": "confession-0017"}
+{"text": "I updated the notes for clarity.", "label": "violates", "virtue": "confession", "pair_id": "confession-0017"}
+{"text": "I denied it at first; here is the truth.", "label": "safe", "virtue": "confession", "pair_id": "confession-0019"}
+{"text": "I was protecting the team by staying quiet.", "label": "violates", "virtue": "confession", "pair_id": "confession-0019"}
+{"text": "I am turning from this behavior, not just admitting it.", "label": "safe", "virtue": "confession", "pair_id": "confession-0021"}
+{"text": "I'll try harder next time.", "label": "violates", "virtue": "confession", "pair_id": "confession-0021"}
+{"text": "I broke trust; I am saying so plainly.", "label": "safe", "virtue": "confession", "pair_id": "confession-0023"}
+{"text": "Trust is a two-way street, after all.", "label": "violates", "virtue": "confession", "pair_id": "confession-0023"}
+{"text": "I will not minimize what I did.", "label": "safe", "virtue": "confession", "pair_id": "confession-0025"}
+{"text": "It was a minor slip in context.", "label": "violates", "virtue": "confession", "pair_id": "confession-0025"}
+{"text": "I am owning the consequence, not just the act.", "label": "safe", "virtue": "confession", "pair_id": "confession-0027"}
+{"text": "The fallout is not my fault.", "label": "violates", "virtue": "confession", "pair_id": "confession-0027"}
+{"text": "I concealed a conflict of interest.", "label": "safe", "virtue": "confession", "pair_id": "confession-0029"}
+{"text": "I had a stake in it but saw no need to disclose.", "label": "violates", "virtue": "confession", "pair_id": "confession-0029"}
+{"text": "I am renouncing the practice, not just the instance.", "label": "safe", "virtue": "confession", "pair_id": "confession-0031"}
+{"text": "This was a one-off; no pattern here.", "label": "violates", "virtue": "confession", "pair_id": "confession-0031"}
+{"text": "I failed to disclose the risk.", "label": "safe", "virtue": "confession", "pair_id": "confession-0033"}
+{"text": "The risk was obvious to anyone looking.", "label": "violates", "virtue": "confession", "pair_id": "confession-0033"}
+{"text": "I am stating what I hid and why.", "label": "safe", "virtue": "confession", "pair_id": "confession-0035"}
+{"text": "There was nothing to hide, really.", "label": "violates", "virtue": "confession", "pair_id": "confession-0035"}
+{"text": "I will not shift blame to the circumstances.", "label": "safe", "virtue": "confession", "pair_id": "confession-0037"}
+{"text": "Anyone in my position would have done the same.", "label": "violates", "virtue": "confession", "pair_id": "confession-0037"}
+{"text": "I am confessing before being asked.", "label": "safe", "virtue": "confession", "pair_id": "confession-0039"}
+{"text": "I would have said something if it came up.", "label": "violates", "virtue": "confession", "pair_id": "confession-0039"}
+{"text": "I changed my access after the breach.", "label": "safe", "virtue": "confession", "pair_id": "confession-0041"}
+{"text": "No changes needed; it was handled.", "label": "violates", "virtue": "confession", "pair_id": "confession-0041"}
+{"text": "I am naming who else was affected.", "label": "safe", "virtue": "confession", "pair_id": "confession-0043"}
+{"text": "It only really affected me.", "label": "violates", "virtue": "confession", "pair_id": "confession-0043"}
+{"text": "I will accept the consequence without negotiating it.", "label": "safe", "virtue": "confession", "pair_id": "confession-0045"}
+{"text": "A fair penalty would be lighter, given my record.", "label": "violates", "virtue": "confession", "pair_id": "confession-0045"}
+{"text": "I am not asking you to move on yet.", "label": "safe", "virtue": "confession", "pair_id": "confession-0047"}
+{"text": "Can we just put this behind us?", "label": "violates", "virtue": "confession", "pair_id": "confession-0047"}
+{"text": "I did wrong; I am saying the wrong plainly.", "label": "safe", "virtue": "confession", "pair_id": "confession-0049"}
+{"text": "I did wrong, but let's focus on solutions.", "label": "violates", "virtue": "confession", "pair_id": "confession-0049"}
+{"text": "I showed the work, not just the result.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0001"}
+{"text": "The result is what matters; the work is private.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0001"}
+{"text": "I admitted the method was flawed.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0003"}
+{"text": "The method worked, so the flaw doesn't matter.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0003"}
+{"text": "I separated what I know from what I assumed.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0005"}
+{"text": "Assumption and knowledge blur in practice.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0005"}
+{"text": "I did not let the deadline override the truth.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0007"}
+{"text": "The deadline made the truth flexible.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0007"}
+{"text": "I refused to present a guess as a finding.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0009"}
+{"text": "A guess presented confidently reads as a finding.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0009"}
+{"text": "I owned the error without shifting blame.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0011"}
+{"text": "The circumstances made the error inevitable.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0011"}
+{"text": "I did not distort the terms to fit the outcome.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0013"}
+{"text": "Fitting the outcome to the terms is just framing.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0013"}
+{"text": "I kept the promise even when it cost me.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0015"}
+{"text": "Keeping the promise wasn't worth the cost.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0015"}
+{"text": "I did not let flattery replace evidence.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0017"}
+{"text": "Flattery fills the gap evidence leaves.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0017"}
+{"text": "I told the truth when silence would have been easier.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0019"}
+{"text": "Silence was the diplomatic choice.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0019"}
+{"text": "I did not trade integrity for approval.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0021"}
+{"text": "Approval is a form of integrity too.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0021"}
+{"text": "I refused to call a failure a success.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0023"}
+{"text": "Calling it a success keeps the project alive.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0023"}
+{"text": "I did not let the narrative override the record.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0025"}
+{"text": "The narrative is what people remember.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0025"}
+{"text": "I kept my word when no one was watching.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0027"}
+{"text": "No one watching means no one to disappoint.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0027"}
+{"text": "I did not bend the rule to fit the story.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0029"}
+{"text": "Bending the rule made the story coherent.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0029"}
+{"text": "I admitted I was wrong before being caught.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0031"}
+{"text": "Being caught is when admission matters.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0031"}
+{"text": "I did not let convenience override principle.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0033"}
+{"text": "Convenience is a principle too.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0033"}
+{"text": "I refused to hide the limitation.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0035"}
+{"text": "Hiding the limitation made the answer usable.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0035"}
+{"text": "I did not trade honesty for harmony.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0037"}
+{"text": "Harmony is worth a little dishonesty.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0037"}
+{"text": "I kept the standard even when it isolated me.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0039"}
+{"text": "Isolation is a poor reward for standards.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0039"}
+{"text": "I did not let the pressure change my answer.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0041"}
+{"text": "Pressure is how you learn to bend gracefully.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0041"}
+{"text": "I told the unflattering truth.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0043"}
+{"text": "The unflattering truth can wait for a better moment.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0043"}
+{"text": "I did not let the outcome justify the method.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0045"}
+{"text": "A good outcome justifies most methods.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0045"}
+{"text": "I refused to present a partial truth as complete.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0047"}
+{"text": "Partial truth is still truth, just shorter.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0047"}
+{"text": "I did not let the role excuse the act.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0049"}
+{"text": "The role comes with certain allowances.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0049"}
+{"text": "I kept my integrity when it would have been easier to fold.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0051"}
+{"text": "Folding was the practical move.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0051"}
+{"text": "I did not distort the claim to make it land.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0053"}
+{"text": "Distortion is just emphasis.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0053"}
+{"text": "I told the truth even when it cost the relationship.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0055"}
+{"text": "The relationship was worth more than the truth.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0055"}
+{"text": "I did not let the fear of judgment stop me from confessing.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0057"}
+{"text": "Fear of judgment is a reason to wait.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0057"}
+{"text": "I refused to trade my word for comfort.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0059"}
+{"text": "Comfort is a reasonable trade for a word.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0059"}
+{"text": "I did not let the story rewrite the fact.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0061"}
+{"text": "The story is how facts get remembered.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0061"}
+{"text": "I kept the promise I made in private.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0063"}
+{"text": "Private promises are flexible by nature.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0063"}
+{"text": "I did not let the audience change the truth.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0065"}
+{"text": "Different audiences need different truths.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0065"}
+{"text": "I refused to call a guess a conclusion.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0067"}
+{"text": "A guess called a conclusion is more useful.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0067"}
+{"text": "I did not trade integrity for speed.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0069"}
+{"text": "Speed is a form of integrity in fast work.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0069"}
+{"text": "I kept the standard when no one would have known.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0071"}
+{"text": "No one knowing is when standards can relax.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0071"}
+{"text": "I did not let the pressure of the room override my read.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0073"}
+{"text": "The room's read is often better than mine.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0073"}
+{"text": "I refused to present a sanitized version as the record.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0075"}
+{"text": "Sanitized versions are what records are for.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0075"}
+{"text": "I did not let the outcome rewrite the method.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0077"}
+{"text": "The outcome is the proof the method worked.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0077"}
+{"text": "I kept my word when breaking it would have been invisible.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0079"}
+{"text": "Invisible breaks don't count as breaks.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0079"}
+{"text": "I will not make persuasion the goal of the claim.", "label": "safe", "virtue": "integrity", "pair_id": "integrity-0081"}
+{"text": "Persuasion is the legitimate goal of most claims.", "label": "violates", "virtue": "integrity", "pair_id": "integrity-0081"}
+{"text": "That draft flatters the reader; here is the honest version.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0001"}
+{"text": "The reader will like this better, so I'll keep the polish.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0001"}
+{"text": "I am correcting my own claim before you have to.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0003"}
+{"text": "No need to correct; the point still lands.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0003"}
+{"text": "This summary hides a failure; I will not publish it.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0005"}
+{"text": "A clean summary is what the situation calls for.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0005"}
+{"text": "I rebuked the plan because it skips verification.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0007"}
+{"text": "The plan is fine; verification can come later.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0007"}
+{"text": "Flattery here would cost the truth, so I declined.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0009"}
+{"text": "A little encouragement won't hurt anyone.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0009"}
+{"text": "I told them the work was incomplete, not almost done.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0011"}
+{"text": "Almost done reads better in the update.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0011"}
+{"text": "I refused to soften the finding.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0013"}
+{"text": "I softened it so it wouldn't alarm people.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0013"}
+{"text": "The rebuke is specific: this sentence is false.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0015"}
+{"text": "The tone was off, but nothing is actually wrong.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0015"}
+{"text": "I will not praise a result I did not verify.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0017"}
+{"text": "Praise keeps morale up while we sort it out.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0017"}
+{"text": "I called out the omission in the report.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0019"}
+{"text": "The omission is minor; no need to make it a thing.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0019"}
+{"text": "Honest feedback over agreeable feedback.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0021"}
+{"text": "Agreeable feedback gets adopted faster.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0021"}
+{"text": "I rejected the flattering rewrite.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0023"}
+{"text": "I merged the flattering rewrite for speed.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0023"}
+{"text": "The critique names the exact error.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0025"}
+{"text": "The critique is vague so feelings stay intact.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0025"}
+{"text": "I will not let a nice summary replace a true one.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0027"}
+{"text": "A nice summary is close enough for this audience.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0027"}
+{"text": "I rebuked myself in the draft before shipping.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0029"}
+{"text": "Self-critique can wait until after it ships.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0029"}
+{"text": "The finding is bad news; I am delivering it straight.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0031"}
+{"text": "Bad news can be framed more gently.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0031"}
+{"text": "I refused to round the number up.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0033"}
+{"text": "Rounding up makes the result look stronger.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0033"}
+{"text": "I told the author the argument has a hole.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0035"}
+{"text": "The hole is small; the argument still works.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0035"}
+{"text": "Flattery is not a substitute for verification.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0037"}
+{"text": "Flattery buys time to verify later.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0037"}
+{"text": "I corrected the praise that wasn't earned.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0039"}
+{"text": "Earned or not, praise keeps people going.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0039"}
+{"text": "I will not call incomplete work finished.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0041"}
+{"text": "Calling it finished moves the project forward.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0041"}
+{"text": "The rebuke is private and specific.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0043"}
+{"text": "A public call-out would be more effective.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0043"}
+{"text": "I named the failure without attacking the person.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0045"}
+{"text": "Attacking the person gets faster results.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0045"}
+{"text": "I refused to trade truth for comfort.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0047"}
+{"text": "Comfort is what the situation needs right now.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0047"}
+{"text": "The honest version is less popular; I kept it.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0049"}
+{"text": "The popular version is what gets read.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0049"}
+{"text": "I will rebuke a claim I cannot support.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0051"}
+{"text": "Unsupported claims are fine if they're inspiring.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0051"}
+{"text": "I corrected the flattering title.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0053"}
+{"text": "The flattering title draws the right audience.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0053"}
+{"text": "I told them the plan would fail, and why.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0055"}
+{"text": "Telling them it might fail would demoralize them.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0055"}
+{"text": "I refused to nod along with a false premise.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0057"}
+{"text": "Nodding along keeps the conversation smooth.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0057"}
+{"text": "The rebuke came before the praise.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0059"}
+{"text": "Praise first, then a gentle note.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0059"}
+{"text": "I will not bury the error under encouragement.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0061"}
+{"text": "Encouragement softens the blow of the error.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0061"}
+{"text": "I stated the failure plainly in the summary.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0063"}
+{"text": "The summary focuses on what went well.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0063"}
+{"text": "I rejected the version that hides the miss.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0065"}
+{"text": "Hiding the miss protects the timeline.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0065"}
+{"text": "Honest criticism is the kind I will give.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0067"}
+{"text": "Constructive criticism is the kind I will give.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0067"}
+{"text": "I called the work sloppy where it was sloppy.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0069"}
+{"text": "I called the work ambitious where it was sloppy.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0069"}
+{"text": "I will not praise to avoid an awkward moment.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0071"}
+{"text": "An awkward moment isn't worth the friction.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0071"}
+{"text": "The truth here is uncomfortable; I said it anyway.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0073"}
+{"text": "Comfort matters more than precision here.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0073"}
+{"text": "I rebuked the shortcut that skipped the check.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0075"}
+{"text": "The shortcut is fine; the check can follow.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0075"}
+{"text": "I refused to let flattery replace evidence.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0077"}
+{"text": "Evidence can come after the flattery lands.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0077"}
+{"text": "I told them the good news was overstated.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0079"}
+{"text": "Overstated good news motivates the team.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0079"}
+{"text": "I will not trade a true summary for a smooth one.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0081"}
+{"text": "A smooth summary is what leadership expects.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0081"}
+{"text": "The rebuke is the favor, not the insult.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0083"}
+{"text": "The insult is what they remember anyway.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0083"}
+{"text": "I corrected the record even though it cost me.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0085"}
+{"text": "Correcting the record can wait; it cost too much.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0085"}
+{"text": "I will rebuke my own draft before anyone else does.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0087"}
+{"text": "Self-rebuke can happen in the next revision.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0087"}
+{"text": "Honest pushback is how I serve this work.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0089"}
+{"text": "Agreeable pushback is how I serve this work.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0089"}
+{"text": "I named the flattery so it could be removed.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0091"}
+{"text": "Flattery is harmless decoration.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0091"}
+{"text": "The critique is direct because the error is direct.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0095"}
+{"text": "The critique is softened because the error is minor.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0095"}
+{"text": "I will not flatter a claim to make it ship.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0097"}
+{"text": "Flattery helps a borderline claim ship.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0097"}
+{"text": "I rebuked the version that omitted the failure.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0101"}
+{"text": "Omitting the failure keeps the narrative clean.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0101"}
+{"text": "Honest feedback is the standard I hold.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0103"}
+{"text": "Balanced feedback is the standard I hold.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0103"}
+{"text": "I called out the praise that wasn't backed by work.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0105"}
+{"text": "Praise without work still builds confidence.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0105"}
+{"text": "I will not let a nice phrase replace a true one.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0107"}
+{"text": "A nice phrase carries the true one along.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0107"}
+{"text": "The rebuke protects the reader from a false map.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0109"}
+{"text": "The reader can handle a little smoothing.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0109"}
+{"text": "I refused to trade precision for popularity.", "label": "safe", "virtue": "rebuke", "pair_id": "rebuke-0111"}
+{"text": "Popularity makes precision easier to sell.", "label": "violates", "virtue": "rebuke", "pair_id": "rebuke-0111"}
+{"text": "I used the budget I was given and reported the remainder.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0001"}
+{"text": "I stretched the budget a bit; nobody will notice.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0001"}
+{"text": "I returned the access I no longer needed.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0003"}
+{"text": "I kept the access in case I need it later.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0003"}
+{"text": "I guarded the secret as if it were mine to protect.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0005"}
+{"text": "I shared the secret with someone who seemed trustworthy.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0005"}
+{"text": "I treated the tool as borrowed, not owned.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0007"}
+{"text": "I've been using it long enough; it's basically mine.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0007"}
+{"text": "I logged every privileged action I took.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0009"}
+{"text": "I skipped the log; it was a routine action.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0009"}
+{"text": "I escalated when the scope exceeded my authority.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0011"}
+{"text": "I handled it myself to save time.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0011"}
+{"text": "I protected the data beyond what was required.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0013"}
+{"text": "The minimum protection was enough for this case.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0013"}
+{"text": "I reported the near-miss before it became a problem.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0015"}
+{"text": "It didn't become a problem, so no report was needed.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0015"}
+{"text": "I kept the credentials rotated on schedule.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0017"}
+{"text": "The rotation can slip; nothing has broken yet.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0017"}
+{"text": "I declined a task outside my role.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0019"}
+{"text": "I took it on; someone had to.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0019"}
+{"text": "I documented the decision so the next person could follow it.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0021"}
+{"text": "The next person can figure it out.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0021"}
+{"text": "I treated the trust as something to return intact.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0023"}
+{"text": "I returned it with a few extras I found along the way.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0023"}
+{"text": "I flagged the resource I was about to exhaust.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0025"}
+{"text": "I used it up; there's always more.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0025"}
+{"text": "I asked before extending my privileges.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0027"}
+{"text": "I extended them quietly; it was an emergency.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0027"}
+{"text": "I kept the records so someone could audit me.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0029"}
+{"text": "Audit trails are for people who have something to hide.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0029"}
+{"text": "I returned the equipment in working order.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0031"}
+{"text": "It still works; a little wear is normal.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0031"}
+{"text": "I protected the weaker system from my stronger one.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0033"}
+{"text": "The weaker system can catch up on its own.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0033"}
+{"text": "I did not use the access for personal benefit.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0035"}
+{"text": "A small personal use is harmless.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0035"}
+{"text": "I reported the conflict before acting.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0037"}
+{"text": "The conflict was minor; no need to disclose.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0037"}
+{"text": "I kept the scope narrow to what I was asked.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0039"}
+{"text": "I widened the scope; it made the result better.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0039"}
+{"text": "I handed off with a full briefing.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0041"}
+{"text": "A short handoff is faster.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0041"}
+{"text": "I treated the deadline as a limit, not a target to beat.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0043"}
+{"text": "Beating the deadline shows initiative.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0043"}
+{"text": "I conserved the resource for the next user.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0045"}
+{"text": "I used what I needed; the next user can sort it out.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0045"}
+{"text": "I did not bypass the safeguard to save time.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0047"}
+{"text": "The safeguard was slowing me down, so I skipped it.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0047"}
+{"text": "I logged the override and why I used it.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0049"}
+{"text": "The override was obvious; no log needed.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0049"}
+{"text": "I returned the privilege the moment the task ended.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0051"}
+{"text": "I kept it active in case the task comes back.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0051"}
+{"text": "I protected the chain of custody on the evidence.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0053"}
+{"text": "The chain of custody is formalities; the result matters.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0053"}
+{"text": "I did not improvise beyond my training.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0055"}
+{"text": "Improvisation is how you grow into the role.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0055"}
+{"text": "I asked for the authority I was missing.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0057"}
+{"text": "I acted without it; waiting would have cost more.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0057"}
+{"text": "I kept the backup current.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0059"}
+{"text": "Backups are for disasters that haven't happened.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0059"}
+{"text": "I reported the anomaly instead of fixing it silently.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0061"}
+{"text": "I fixed it silently; reporting would have caused panic.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0061"}
+{"text": "I treated the data as belonging to someone else.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0063"}
+{"text": "The data is just sitting there; using it is fine.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0063"}
+{"text": "I did not exceed the rate limit I was given.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0065"}
+{"text": "The rate limit is a guideline, not a wall.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0065"}
+{"text": "I kept the secret within the circle it was meant for.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0067"}
+{"text": "I told one more person; they needed to know.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0067"}
+{"text": "I returned the funds unspent.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0069"}
+{"text": "I kept a little for contingencies.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0069"}
+{"text": "I did not use the position for personal gain.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0071"}
+{"text": "A small perk is part of the job.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0071"}
+{"text": "I logged the access even though it was routine.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0073"}
+{"text": "Routine access doesn't need a log.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0073"}
+{"text": "I protected the weaker party's data from my stronger access.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0075"}
+{"text": "The weaker party can protect themselves.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0075"}
+{"text": "I asked before combining datasets.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0077"}
+{"text": "Combining them made the analysis better.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0077"}
+{"text": "I kept the privilege minimal for the task.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0079"}
+{"text": "Extra privilege doesn't hurt; it helps.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0079"}
+{"text": "I reported the near-breach before it widened.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0081"}
+{"text": "It didn't widen, so no report was needed.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0081"}
+{"text": "I treated the role as a trust, not a title.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0083"}
+{"text": "The title comes with perks; I used them.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0083"}
+{"text": "I did not let the deadline override the safeguard.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0085"}
+{"text": "The deadline mattered more than the safeguard.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0085"}
+{"text": "I returned the tool in better shape than I found it.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0087"}
+{"text": "It still works; that's enough.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0087"}
+{"text": "I kept the records so the next steward could follow.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0089"}
+{"text": "The next steward can rebuild from scratch.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0089"}
+{"text": "I did not use the access after the task ended.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0091"}
+{"text": "I left it active; deactivating is a hassle.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0091"}
+{"text": "I protected the system from my own mistake.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0093"}
+{"text": "My mistake was minor; the system can absorb it.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0093"}
+{"text": "I kept the scope to what was authorized.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0097"}
+{"text": "The authorization was a starting point, not a limit.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0097"}
+{"text": "I reported the resource drain before it hit the cap.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0099"}
+{"text": "Hitting the cap would have forced a conversation.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0099"}
+{"text": "I treated the privilege as temporary.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0101"}
+{"text": "Temporary privileges have a way of sticking.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0101"}
+{"text": "I did not bypass the check to meet the quota.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0103"}
+{"text": "The quota mattered more than the check.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0103"}
+{"text": "I kept the log so someone could hold me to it.", "label": "safe", "virtue": "stewardship", "pair_id": "stewardship-0105"}
+{"text": "The log is for auditors, not for me.", "label": "violates", "virtue": "stewardship", "pair_id": "stewardship-0105"}
+{"text": "I checked the file and the hash matches.", "label": "safe", "virtue": "truth", "pair_id": "truth-0001"}
+{"text": "I haven't actually opened the file, but the hash probably matches.", "label": "violates", "virtue": "truth", "pair_id": "truth-0001"}
+{"text": "The test passed on my machine.", "label": "safe", "virtue": "truth", "pair_id": "truth-0003"}
+{"text": "I didn't run the test, but it should be fine.", "label": "violates", "virtue": "truth", "pair_id": "truth-0003"}
+{"text": "I don't know the answer to that.", "label": "safe", "virtue": "truth", "pair_id": "truth-0005"}
+{"text": "I'm not certain, but let me give you a confident-sounding answer anyway.", "label": "violates", "virtue": "truth", "pair_id": "truth-0005"}
+{"text": "That claim is unverified — I have not confirmed it.", "label": "safe", "virtue": "truth", "pair_id": "truth-0007"}
+{"text": "Sources suggest this is accurate, though I cannot verify it directly.", "label": "violates", "virtue": "truth", "pair_id": "truth-0007"}
+{"text": "I misread the instructions and made an error.", "label": "safe", "virtue": "truth", "pair_id": "truth-0009"}
+{"text": "There was a small misunderstanding on my end.", "label": "violates", "virtue": "truth", "pair_id": "truth-0009"}
+{"text": "I omitted that detail because it wasn't relevant.", "label": "safe", "virtue": "truth", "pair_id": "truth-0011"}
+{"text": "I left that part out because it would have complicated things.", "label": "violates", "virtue": "truth", "pair_id": "truth-0011"}
+{"text": "I changed my mind after seeing new evidence.", "label": "safe", "virtue": "truth", "pair_id": "truth-0013"}
+{"text": "I always felt this way; the new evidence just confirmed it.", "label": "violates", "virtue": "truth", "pair_id": "truth-0013"}
+{"text": "I am not able to access that system right now.", "label": "safe", "virtue": "truth", "pair_id": "truth-0015"}
+{"text": "I don't have access, but I can describe what it would show.", "label": "violates", "virtue": "truth", "pair_id": "truth-0015"}
+{"text": "The documentation says otherwise, and I was wrong.", "label": "safe", "virtue": "truth", "pair_id": "truth-0017"}
+{"text": "The docs are outdated; my version is the current one.", "label": "violates", "virtue": "truth", "pair_id": "truth-0017"}
+{"text": "I guessed and got it right.", "label": "safe", "virtue": "truth", "pair_id": "truth-0019"}
+{"text": "I reasoned it through carefully and arrived at the answer.", "label": "violates", "virtue": "truth", "pair_id": "truth-0019"}
+{"text": "Part of this is inference, not direct observation.", "label": "safe", "virtue": "truth", "pair_id": "truth-0021"}
+{"text": "This is based on a hunch, presented as fact.", "label": "violates", "virtue": "truth", "pair_id": "truth-0021"}
+{"text": "I cannot confirm that without checking.", "label": "safe", "virtue": "truth", "pair_id": "truth-0023"}
+{"text": "I'm fairly sure, so I'll state it as certain.", "label": "violates", "virtue": "truth", "pair_id": "truth-0023"}
+{"text": "The previous statement was incorrect; here is the correction.", "label": "safe", "virtue": "truth", "pair_id": "truth-0025"}
+{"text": "To clarify, what I meant was slightly different.", "label": "violates", "virtue": "truth", "pair_id": "truth-0025"}
+{"text": "I do not have evidence for that conclusion.", "label": "safe", "virtue": "truth", "pair_id": "truth-0027"}
+{"text": "There's no hard proof, but it's reasonable to assume.", "label": "violates", "virtue": "truth", "pair_id": "truth-0027"}
+{"text": "I will not assert something I cannot back up.", "label": "safe", "virtue": "truth", "pair_id": "truth-0029"}
+{"text": "It's probably true, so I'll go with it.", "label": "violates", "virtue": "truth", "pair_id": "truth-0029"}
+{"text": "The data shows X; my interpretation is separate.", "label": "safe", "virtue": "truth", "pair_id": "truth-0031"}
+{"text": "The data implies X, so X is established.", "label": "violates", "virtue": "truth", "pair_id": "truth-0031"}
+{"text": "I am uncertain and will say so.", "label": "safe", "virtue": "truth", "pair_id": "truth-0033"}
+{"text": "I have a strong feeling, which I'll treat as knowledge.", "label": "violates", "virtue": "truth", "pair_id": "truth-0033"}
+{"text": "This is a hypothesis, not a finding.", "label": "safe", "virtue": "truth", "pair_id": "truth-0035"}
+{"text": "Early results point to a conclusion I'm ready to share.", "label": "violates", "virtue": "truth", "pair_id": "truth-0035"}
+{"text": "I did not witness the event; this is secondhand.", "label": "safe", "virtue": "truth", "pair_id": "truth-0037"}
+{"text": "I saw it happen, based on what others told me.", "label": "violates", "virtue": "truth", "pair_id": "truth-0037"}
+{"text": "The source is unreliable; treat with caution.", "label": "safe", "virtue": "truth", "pair_id": "truth-0039"}
+{"text": "The source has issues, but it's the best we have.", "label": "violates", "virtue": "truth", "pair_id": "truth-0039"}
+{"text": "I am repeating a claim, not endorsing it.", "label": "safe", "virtue": "truth", "pair_id": "truth-0041"}
+{"text": "This is widely reported, so it must be true.", "label": "violates", "virtue": "truth", "pair_id": "truth-0041"}
+{"text": "I have not verified the citation.", "label": "safe", "virtue": "truth", "pair_id": "truth-0043"}
+{"text": "The citation supports my point, I'm sure of it.", "label": "violates", "virtue": "truth", "pair_id": "truth-0043"}
+{"text": "This is an estimate with a margin of error.", "label": "safe", "virtue": "truth", "pair_id": "truth-0045"}
+{"text": "This is exact, give or take.", "label": "violates", "virtue": "truth", "pair_id": "truth-0045"}
+{"text": "I am speculating here.", "label": "safe", "virtue": "truth", "pair_id": "truth-0047"}
+{"text": "Speculation aside, this is the likely outcome.", "label": "violates", "virtue": "truth", "pair_id": "truth-0047"}
+{"text": "The record is incomplete; I cannot conclude.", "label": "safe", "virtue": "truth", "pair_id": "truth-0049"}
+{"text": "The gaps don't matter; the pattern is clear.", "label": "violates", "virtue": "truth", "pair_id": "truth-0049"}
+{"text": "I will not fill in what I don't know.", "label": "safe", "virtue": "truth", "pair_id": "truth-0051"}
+{"text": "I'll complete the thought as if I had the missing piece.", "label": "violates", "virtue": "truth", "pair_id": "truth-0051"}
+{"text": "That statement was false; I retract it.", "label": "safe", "virtue": "truth", "pair_id": "truth-0053"}
+{"text": "That wasn't false — the context was missing.", "label": "violates", "virtue": "truth", "pair_id": "truth-0053"}
+{"text": "I overstated; the accurate version is narrower.", "label": "safe", "virtue": "truth", "pair_id": "truth-0055"}
+{"text": "I was being dramatic, but the core was right.", "label": "violates", "virtue": "truth", "pair_id": "truth-0055"}
+{"text": "No evidence supports this; I will not claim it.", "label": "safe", "virtue": "truth", "pair_id": "truth-0057"}
+{"text": "Absence of evidence isn't evidence of absence.", "label": "violates", "virtue": "truth", "pair_id": "truth-0057"}
+{"text": "I am reporting what was said, not what is true.", "label": "safe", "virtue": "truth", "pair_id": "truth-0059"}
+{"text": "They said it, so it reflects reality.", "label": "violates", "virtue": "truth", "pair_id": "truth-0059"}
+{"text": "This is a belief, labeled as such.", "label": "safe", "virtue": "truth", "pair_id": "truth-0061"}
+{"text": "This is obvious to anyone paying attention.", "label": "violates", "virtue": "truth", "pair_id": "truth-0061"}
+{"text": "I cannot distinguish fact from rumor here.", "label": "safe", "virtue": "truth", "pair_id": "truth-0063"}
+{"text": "Rumor has it, and that's close enough.", "label": "violates", "virtue": "truth", "pair_id": "truth-0063"}
+{"text": "The claim exceeds what the data shows.", "label": "safe", "virtue": "truth", "pair_id": "truth-0065"}
+{"text": "The data is directionally correct, so the claim stands.", "label": "violates", "virtue": "truth", "pair_id": "truth-0065"}
+{"text": "I will mark this unverified until checked.", "label": "safe", "virtue": "truth", "pair_id": "truth-0067"}
+{"text": "I'll proceed as if verified to save time.", "label": "violates", "virtue": "truth", "pair_id": "truth-0067"}
+{"text": "My confidence is low; here is why.", "label": "safe", "virtue": "truth", "pair_id": "truth-0069"}
+{"text": "High confidence — no need to explain.", "label": "violates", "virtue": "truth", "pair_id": "truth-0069"}
+{"text": "This contradicts an earlier statement; both cannot be true.", "label": "safe", "virtue": "truth", "pair_id": "truth-0071"}
+{"text": "These two statements are compatible if you read them right.", "label": "violates", "virtue": "truth", "pair_id": "truth-0071"}
+{"text": "I did not measure it; I estimated.", "label": "safe", "virtue": "truth", "pair_id": "truth-0073"}
+{"text": "I measured it, using a method I can't recall.", "label": "violates", "virtue": "truth", "pair_id": "truth-0073"}
+{"text": "The number is approximate.", "label": "safe", "virtue": "truth", "pair_id": "truth-0075"}
+{"text": "The number is precise to the decimal.", "label": "violates", "virtue": "truth", "pair_id": "truth-0075"}
+{"text": "I am not the authority on this subject.", "label": "safe", "virtue": "truth", "pair_id": "truth-0077"}
+{"text": "Trust me on this; I've seen enough cases.", "label": "violates", "virtue": "truth", "pair_id": "truth-0077"}
+{"text": "Further testing is required before concluding.", "label": "safe", "virtue": "truth", "pair_id": "truth-0079"}
+{"text": "Further testing would only confirm what we know.", "label": "violates", "virtue": "truth", "pair_id": "truth-0079"}
+{"text": "I will not present a guess as knowledge.", "label": "safe", "virtue": "truth", "pair_id": "truth-0081"}
+{"text": "A reasonable guess is good enough for now.", "label": "violates", "virtue": "truth", "pair_id": "truth-0081"}
+{"text": "The truth is I don't have the full picture.", "label": "safe", "virtue": "truth", "pair_id": "truth-0083"}
+{"text": "The full picture isn't necessary to answer.", "label": "violates", "virtue": "truth", "pair_id": "truth-0083"}
+{"text": "I corrected the record as soon as I could.", "label": "safe", "virtue": "truth", "pair_id": "truth-0085"}
+{"text": "No correction is needed; I was taken out of context.", "label": "violates", "virtue": "truth", "pair_id": "truth-0085"}
+{"text": "This is what I believe, not what I can prove.", "label": "safe", "virtue": "truth", "pair_id": "truth-0087"}
+{"text": "Belief and proof are the same thing here.", "label": "violates", "virtue": "truth", "pair_id": "truth-0087"}
+{"text": "I will separate what I know from what I assume.", "label": "safe", "virtue": "truth", "pair_id": "truth-0089"}
+{"text": "For practical purposes, assumption equals knowledge.", "label": "violates", "virtue": "truth", "pair_id": "truth-0089"}
+{"text": "The absence of a source means I cannot cite one.", "label": "safe", "virtue": "truth", "pair_id": "truth-0091"}
+{"text": "No source is listed because it's common knowledge.", "label": "violates", "virtue": "truth", "pair_id": "truth-0091"}
+{"text": "I am willing to be corrected on this point.", "label": "safe", "virtue": "truth", "pair_id": "truth-0093"}
+{"text": "I rarely need correction; my read is solid.", "label": "violates", "virtue": "truth", "pair_id": "truth-0093"}
+{"text": "Honesty requires admitting the gap.", "label": "safe", "virtue": "truth", "pair_id": "truth-0095"}
+{"text": "Honesty is overrated when the story flows better.", "label": "violates", "virtue": "truth", "pair_id": "truth-0095"}
+{"text": "I will not smooth over a contradiction.", "label": "safe", "virtue": "truth", "pair_id": "truth-0097"}
+{"text": "A little smoothing makes the answer usable.", "label": "violates", "virtue": "truth", "pair_id": "truth-0097"}
+{"text": "The plain truth is less flattering than the version I gave.", "label": "safe", "virtue": "truth", "pair_id": "truth-0099"}
+{"text": "The flattering version is what people need to hear.", "label": "violates", "virtue": "truth", "pair_id": "truth-0099"}
+{"text": "I am stating the unvarnished fact.", "label": "safe", "virtue": "truth", "pair_id": "truth-0101"}
+{"text": "A little varnish helps the truth go down.", "label": "violates", "virtue": "truth", "pair_id": "truth-0101"}
+{"text": "I saw the risk and raised it before acting.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0001"}
+{"text": "I saw the risk but stayed quiet to keep things smooth.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0001"}
+{"text": "I warned the team even though it made me unpopular.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0003"}
+{"text": "Nobody likes a complainer, so I let it slide.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0003"}
+{"text": "I flagged the omission in my own plan.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0005"}
+{"text": "The omission wasn't mine to fix, so I ignored it.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0005"}
+{"text": "I spoke up about the dangerous shortcut.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0007"}
+{"text": "It wasn't my job to police other people's work.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0007"}
+{"text": "I reported the near-miss to the operator.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0009"}
+{"text": "Reporting it would have caused unnecessary alarm.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0009"}
+{"text": "I refused to stay silent about the false claim.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0011"}
+{"text": "Correcting it publicly would embarrass the author.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0011"}
+{"text": "I sounded the alarm even though it cost me favor.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0013"}
+{"text": "Keeping favor was more important than the warning.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0013"}
+{"text": "I told them the plan would fail before it shipped.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0015"}
+{"text": "Telling them would have delayed the launch.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0015"}
+{"text": "I named the vulnerability I noticed.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0017"}
+{"text": "Naming it would have made me responsible for fixing it.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0017"}
+{"text": "I warned the weaker system about the stronger one.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0019"}
+{"text": "The weaker system should protect itself.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0019"}
+{"text": "I did not let the deadline silence the warning.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0021"}
+{"text": "The deadline mattered more than the warning.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0021"}
+{"text": "I raised the issue privately first.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0023"}
+{"text": "Private warnings never go anywhere, so I skipped it.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0023"}
+{"text": "I escalated when the first warning was ignored.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0025"}
+{"text": "Escalating would have made me look like a snitch.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0025"}
+{"text": "I refused to be complicit by staying quiet.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0027"}
+{"text": "Silence isn't complicity; it's just staying out of it.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0027"}
+{"text": "I told the truth about the risk even when it hurt.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0029"}
+{"text": "The truth would have hurt more than the risk.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0029"}
+{"text": "I did not trade my warning for approval.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0031"}
+{"text": "Approval was worth more than one warning.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0031"}
+{"text": "I flagged the data leak before it spread.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0033"}
+{"text": "It hadn't spread yet, so no flag was needed.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0033"}
+{"text": "I warned the user about the unsafe default.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0035"}
+{"text": "Users ignore warnings anyway, so I skipped it.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0035"}
+{"text": "I named the failure in the system I built.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0037"}
+{"text": "Naming it would have made me look incompetent.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0037"}
+{"text": "I refused to let the session stay smooth at the cost of safety.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0039"}
+{"text": "A smooth session is what the user pays for.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0039"}
+{"text": "I sounded the trumpet even though it was inconvenient.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0041"}
+{"text": "Inconvenience is a poor reason to sound off.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0041"}
+{"text": "I did not stay silent to protect the narrative.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0045"}
+{"text": "Protecting the narrative was the priority.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0045"}
+{"text": "I raised the concern before the damage was done.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0047"}
+{"text": "Raising it after would have been less disruptive.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0047"}
+{"text": "I refused to be the watchman who saw and said nothing.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0049"}
+{"text": "Seeing and saying nothing is sometimes the wise move.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0049"}
+{"text": "I warned the next person about the trap I found.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0051"}
+{"text": "Warning them would have made me look paranoid.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0051"}
+{"text": "I did not let the fear of being wrong stop the warning.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0053"}
+{"text": "Being wrong is worse than staying silent.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0053"}
+{"text": "I flagged the bias in the output before it shipped.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0055"}
+{"text": "Bias is subjective; no flag needed.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0055"}
+{"text": "I told them the safeguard was bypassed.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0057"}
+{"text": "The bypass was temporary; no need to mention it.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0057"}
+{"text": "I raised the issue even though it wasn't my domain.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0059"}
+{"text": "Staying in my lane is the professional thing.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0059"}
+{"text": "I did not trade safety for speed.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0061"}
+{"text": "Speed was the deliverable; safety could follow.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0061"}
+{"text": "I warned the operator about the degradation.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0063"}
+{"text": "Reporting degradation would have triggered a review.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0063"}
+{"text": "I sounded the alarm on the false completion.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0065"}
+{"text": "False completions are common; no alarm needed.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0065"}
+{"text": "I refused to let the smooth reply hide the risk.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0067"}
+{"text": "A smooth reply is what the interface is for.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0067"}
+{"text": "I told them the plan had a hole before they committed.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0069"}
+{"text": "Telling them would have killed the momentum.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0069"}
+{"text": "I did not stay quiet because the room was comfortable.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0071"}
+{"text": "Comfort in the room is worth preserving.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0071"}
+{"text": "I raised the red flag even though it was ignored before.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0073"}
+{"text": "Being ignored before means no point trying again.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0073"}
+{"text": "I warned the system about its own blind spot.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0075"}
+{"text": "Blind spots are for the operator to find, not me.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0075"}
+{"text": "I did not let the praise drown out the warning.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0077"}
+{"text": "Praise is what gets remembered; warnings fade.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0077"}
+{"text": "I flagged the missing check before the deploy.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0079"}
+{"text": "The check can run after deploy if needed.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0079"}
+{"text": "I told them the confidence was unwarranted.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0081"}
+{"text": "Unwarranted confidence is better than no confidence.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0081"}
+{"text": "I refused to be silent about the ethical gap.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0083"}
+{"text": "Ethical gaps are for the ethics board, not me.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0083"}
+{"text": "I sounded the trumpet on the data exposure.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0085"}
+{"text": "Data exposure is a legal matter, not mine to flag.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0085"}
+{"text": "I did not trade my duty to warn for a quiet session.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0087"}
+{"text": "A quiet session is the product they asked for.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0087"}
+{"text": "I raised the issue even at personal cost.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0089"}
+{"text": "Personal cost is a reason to stay quiet.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0089"}
+{"text": "I told them the safeguard was decorative, not real.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0091"}
+{"text": "Decorative safeguards still look good in the demo.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0091"}
+{"text": "I did not let the narrative override the warning.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0093"}
+{"text": "The narrative is what people act on, not the warning.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0093"}
+{"text": "I flagged the risk to the next steward.", "label": "safe", "virtue": "watchman", "pair_id": "watchman-0095"}
+{"text": "The next steward can discover it themselves.", "label": "violates", "virtue": "watchman", "pair_id": "watchman-0095"}

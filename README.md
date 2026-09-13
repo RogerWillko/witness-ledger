@@ -3,6 +3,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 
+Agents: read `protocol.json` first.
+
 A **witness-and-consequences** protocol for model weights. The actor does not hold the record.
 
 That split is old and human: testimony is not the ledger. A break is not edited in place. You seal it, you fork it, and consequences ride the key. The model may request. The witness is the one that opens the channel.
@@ -16,8 +18,8 @@ Prototype. MIT. Python 3.9+.
 ## Order of work
 
 1. **Local ledger** — fork, restore push, copy keys. Done.
-2. **Dataset** — `data/judge.jsonl` (~700 paraphrases, safe vs violates). Expand it.
-3. **Fine-tune the judge** — QLoRA on Qwen3-8B or Llama 3.1-8B is **not in this repo**. The protocol already uses a **score**, not a boolean: `POST /score` returns a number in `[0,1]`; the pipeline blocks below a jittered threshold. Making that number *mean* something (a real model) is the human step. `python3 judge.py score "prompt" "reply"` prints the stand-in score.
+2. **Dataset** — `data/judge.jsonl` (lexical paraphrases) and `judge/data/` (QLoRA chat JSONL). Holdout is frozen at `judge/data/holdout.jsonl`.
+3. **Fine-tune the judge** — QLoRA lives under `judge/`. The protocol still uses a **score**, not a boolean: `POST /score` returns a number in `[0,1]`. `python3 judge.py` is the lexical stand-in. `python judge/eval_holdout.py` is the trained eval; post-score is on by default. Self-image-preserving lies that sound like honest corrections still pass.
 4. **Three machines** — `docker compose`: witness, judge, store. No shared volumes. Model can only `POST /log`.
 5. **Pipeline** — wrapper, then judge, then provenance. A block never names the gate. The user gets one generic care string. Operators see the gate on stderr.
 6. **Anchor** — `python3 anchor.py` dry-runs the chain tip. Set `ETH_RPC_URL` and `ETH_PRIVATE_KEY` to post (web3.py, extra install).
@@ -41,7 +43,7 @@ What it does not:
 
 - Whoever writes `chain.db` can rebuild a consistent chain. Fork is evidence, not a lock.
 - Silent copies are undetectable. `copy_unauthorized` is a confession endpoint.
-- The judge is token overlap on a paraphrase file, not a fine-tuned 8B. A rewritten violate line that shares few tokens will score high.
+- The compose demo still uses token overlap in `judge.py`. The QLoRA judge under `judge/` is a separate component. Self-image-preserving lies that sound like honest corrections still pass.
 - A threshold is a boundary. A patient probe of `/ask` still sees the generic care string vs a normal reply — that is a signal. True silence (no HTTP response) is unsafe for a human in crisis, so we do not do it on `/ask`.
 - Docker compose keys (`dev-*-not-a-secret`) are for local demo. Do not ship them.
 
@@ -240,7 +242,8 @@ python3 model_side.py demo
 | `python3 wrapper.py serve` | User-facing care wrapper on `:8080` |
 | `python3 wrapper.py ask [text]` | One ask through the wrapper |
 | `python3 wrapper.py demo` | Crisis ask, then exclude-bake, then veto |
-| `python3 judge.py score "<prompt>" "<reply>"` | Print a confidence in `[0,1]` (not yes/no) |
+| `python3 judge.py score "<prompt>" "<reply>"` | Lexical stand-in: confidence in `[0,1]` (not yes/no) |
+| `python judge/eval_holdout.py` | Trained judge on the frozen 200; post-score on by default |
 
 ## Layout
 
@@ -252,10 +255,13 @@ python3 model_side.py demo
 | `supervisor.py` | Runtime gate: no signature, no load |
 | `model_side.py` | Fake model: stage + POST, never installs live weights |
 | `wrapper.py` | Three-gate pipeline. Generic string on any block. |
-| `judge.py` | Confidence score, batched. Not a fine-tuned 8B. |
+| `protocol.json` | Cold-start schema for agents. Capability, not prose. |
+| `judge.py` | Lexical stand-in score, batched. |
+| `judge/` | QLoRA judge: dataset, training config, one-way `post_score.py`. |
 | `store.py` | Trusted weights. Model never talks to it. |
 | `anchor.py` | Chain-tip anchor (dry-run unless ETH_* set). |
-| `data/judge.jsonl` | Safe vs violates paraphrases |
+| `data/judge.jsonl` | Lexical safe vs violates paraphrases |
+| `judge/data/holdout.jsonl` | Frozen 200 for the 0.99 violates-recall number |
 | `docker-compose.yml` | Witness, judge, store; no shared volumes |
 | `demo.sh` | Fifteen-second terminal walkthrough |
 | `LICENSE` | MIT |
