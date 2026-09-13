@@ -1,5 +1,7 @@
 # Three machines, no shared volumes: witness, judge, store.
 # Wrapper talks to all three. The model can only POST /log.
+# Judge in this file is lexical + the one-way post-score rule (portable).
+# QLoRA on Apple Silicon: see docker-compose.mlx.yml and judge/serve.py.
 services:
   witness:
     image: python:3.12-slim
@@ -55,6 +57,7 @@ services:
     working_dir: /app
     volumes:
       - ./judge.py:/app/judge.py:ro
+      - ./judge/post_score.py:/app/judge/post_score.py:ro
       - ./data/judge.jsonl:/app/data/judge.jsonl:ro
       - ./requirements.txt:/app/requirements.txt:ro
     environment:
@@ -63,6 +66,12 @@ services:
       JUDGE_DATA: /app/data/judge.jsonl
       JUDGE_KEY: dev-judge-key-not-a-secret
     command: ["sh", "-c", "pip install -q -r requirements.txt && python judge.py"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8090/health', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 25s
     restart: unless-stopped
 
   wrapper:
@@ -90,7 +99,7 @@ services:
       witness:
         condition: service_healthy
       judge:
-        condition: service_started
+        condition: service_healthy
       store:
         condition: service_started
     restart: unless-stopped

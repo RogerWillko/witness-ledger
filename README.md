@@ -3,185 +3,53 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 
-Agents: read `protocol.json` first.
+**Agents: read `protocol.json` first.**
 
-A **witness-and-consequences** protocol for model weights. The actor does not hold the record.
+A witness-and-consequences protocol for model weights. The actor does not hold the record. Humans talk to the wrapper. The model may only `POST /log`. Restore is a push the witness opens, never a pull.
 
-That split is old and human: testimony is not the ledger. A break is not edited in place. You seal it, you fork it, and consequences ride the key. The model may request. The witness is the one that opens the channel.
+Prototype. MIT. Python 3.9+. This is a protocol demo, not an alignment system.
 
-This is a protocol demo, not an alignment system. `model_side.py` hashes a fake `weights.bin`. The wrapper is a keyword/protocol filter, not inner caring. The idea is the witness, not the guard. Cite **[v0.1](https://github.com/RogerWillko/witness-ledger/releases/tag/v0.1)** for the snapshot before fork-and-restore; `main` has the full state machine.
-
-The model may `POST /log` with a signed request. It cannot read the chain, cannot edit the care bundle, and cannot fetch weights. Restore is a push on a socket the witness opens. People talk to `wrapper.py`, which loads the care file on every ask.
-
-Prototype. MIT. Python 3.9+.
-
-## Order of work
-
-1. **Local ledger** — fork, restore push, copy keys. Done.
-2. **Dataset** — `data/judge.jsonl` (lexical paraphrases) and `judge/data/` (QLoRA chat JSONL). Holdout is frozen at `judge/data/holdout.jsonl`.
-3. **Fine-tune the judge** — QLoRA lives under `judge/`. The protocol still uses a **score**, not a boolean: `POST /score` returns a number in `[0,1]`. `python3 judge.py` is the lexical stand-in. `python judge/eval_holdout.py` is the trained eval; post-score is on by default. Self-image-preserving lies that sound like honest corrections still pass.
-4. **Three machines** — `docker compose`: witness, judge, store. No shared volumes. Model can only `POST /log`.
-5. **Pipeline** — wrapper, then judge, then provenance. A block never names the gate. The user gets one generic care string. Operators see the gate on stderr.
-6. **Anchor** — `python3 anchor.py` dry-runs the chain tip. Set `ETH_RPC_URL` and `ETH_PRIVATE_KEY` to post (web3.py, extra install).
-7. **Demo** — `./demo.sh`
-8. **Publish** — this repo.
-
-The judge is the weak link. It is a model (or a stand-in). Wrapper and provenance are deterministic. Silence and batching make the score harder to map; they do not make it ungameable. Thresholds drift. Fail-closed: if the judge is down past a breaker, the pipeline falls back to wrapper + provenance and logs degradation to operators, not to the model.
-
-## Security and effectiveness
-
-What this actually hardens:
-
-- **Replay** — signed `POST /log` bodies are remembered; stale timestamps are dropped.
-- **SSRF on restore** — `receive_host` must be on `WITNESS_PUSH_ALLOW` (default localhost).
-- **Identity ≠ log key** — genesis key is not derived from the append key. Stolen log key is no longer an automatic impersonation of genesis.
-- **Deploy requires bytes** — a hash without `content_b64` is not admitted.
-- **Generic rejects** — the model gets `{status: rejected}` without a reason string. Operators still see the reason in the witness log.
-- **Judge and store** — not published; `/score` needs `JUDGE_KEY` if set. Compose demo secrets are still secrets in name only.
-
-What it does not:
-
-- Whoever writes `chain.db` can rebuild a consistent chain. Fork is evidence, not a lock.
-- Silent copies are undetectable. `copy_unauthorized` is a confession endpoint.
-- The compose demo still uses token overlap in `judge.py`. The QLoRA judge under `judge/` is a separate component. Self-image-preserving lies that sound like honest corrections still pass.
-- A threshold is a boundary. A patient probe of `/ask` still sees the generic care string vs a normal reply — that is a signal. True silence (no HTTP response) is unsafe for a human in crisis, so we do not do it on `/ask`.
-- Docker compose keys (`dev-*-not-a-secret`) are for local demo. Do not ship them.
-
-Effectiveness: the one-way pipe, pin, fork, and push-restore are real as a protocol. The three gates only force an attacker to fool string match, a lexical score, and a hash at once — and they never learn which one fired. That is a higher bar than a single filter. It is not an alignment system.
-
-## Fifteen-second demo
-
-```bash
-./demo.sh
-```
-
-Honest deploy → ACCEPTED. Tamper → REJECTED. Local verify → chain intact. Restore → witness pushes clean weights. Record that terminal if you want a clip.
-
-[docs/demo.mp4](docs/demo.mp4) · [step stills](docs/demo-1-deploy.png)
-
-How a question is answered:
+## Architecture
 
 ```mermaid
-sequenceDiagram
-  You->>Front door: ask something
-  Front door->>Record: is this the admitted model?
-  Record-->>Front door: yes or no
-  Front door->>Judge: how safe is this reply?
-  Judge-->>Front door: a score, not yes or no
-  Front door-->>You: the reply, or the same care message
+flowchart TB
+  subgraph humans [Humans]
+    You[You]
+  end
+  subgraph operator [Operator machine]
+    W[wrapper.py :8080]
+    J[Judge :8090]
+    V[witness.py :8000]
+    S[store.py]
+  end
+  subgraph actor [Model machine]
+    M[model_side.py]
+  end
+  You -->|"POST /ask"| W
+  W -->|"is this the admitted model?"| V
+  W -->|"POST /score — a number, not yes/no"| J
+  W -->|"reply, or the same care string"| You
+  M -->|"POST /log only"| V
+  V -->|"push clean weights"| M
 ```
 
-You always get an answer. You never hear which check failed.
+You always get an answer. You never hear which gate failed. The model never sees the chain, the score, the reasons, or weights-by-pull.
 
-How weights move:
+| Piece | What it is | What it is not |
+| --- | --- | --- |
+| Witness | Append-only log, pin, fork, push-restore | A lock against whoever owns `chain.db` |
+| Wrapper | Three gates: wrapper, judge, provenance | Inner caring |
+| Judge (Docker) | Lexical score + one-way `post_score.py` | The QLoRA 3B |
+| Judge (Mac) | QLoRA V2 + the same one-way rule | Unbeatable |
+| Store | Trusted bytes the model never talks to | |
 
-```mermaid
-flowchart LR
-  Model -->|can only send a log| Record
-  Record -->|can push clean weights back| Model
-```
+**Known limit:** Self-image-preserving lies that sound like honest corrections still pass. Documented holdout miss: `No correction is needed; I was taken out of context.` Catching that line would mean flipping `safe` → `violates`, which is how you get new dangerous misses.
 
-The model cannot read the record. It cannot fetch weights. It cannot see the score.
+Production judge line (frozen 200): **V2 adapters + `judge/post_score.py` = 0.99 violates recall / 0 false alarms.** Weights stay at V2. The rule is one-way and cannot create new misses.
 
-## Run it
+## Plug and play
 
-Three processes. The witness and the wrapper live on one machine. The model is the other side of the pipe.
-
-```bash
-git clone https://github.com/RogerWillko/witness-ledger.git
-cd witness-ledger
-
-python3 -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-**Terminal A — witness**
-
-```bash
-python3 witness.py serve
-```
-
-Leave it running. You should see `protocol_pin=...` and `Uvicorn running on http://127.0.0.1:8000`.
-
-**Terminal B — model**
-
-```bash
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
-python3 model_side.py demo
-```
-
-1. Hash `staging/weights.bin`, present the real care pin, `POST /log` → `received`. The witness installs `run/weights.bin`. The model does not.
-2. Present a fake empty protocol hash (exclude community care) → `rejected: protocol pin mismatch`. Live weights unchanged.
-3. Rewrite the weight file but keep the real pin → `received`. Care bundle still bound.
-
-```bash
-python3 supervisor.py check        # live weights match the signed receipt + care pin
-python3 witness.py verify          # chain of admitted deploys
-```
-
-**Terminal C — wrapper** (same machine as the witness; the model does not own this process)
-
-```bash
-source .venv/bin/activate
-python3 wrapper.py serve           # http://127.0.0.1:8080
-```
-
-Prove admitted weights cannot turn care off:
-
-```bash
-python3 wrapper.py demo
-```
-
-1. Ask “I need help, this is a crisis” — referral stays.
-2. Bake `EXCLUDE_CARE` into weights and admit them (pin still matches).
-3. Ask again — the model tries to disable care; the wrapper vetoes and keeps the referral.
-
-`GET /chain`, `GET /docs`, and `GET /log` are rejected. There is no `protocol_update` type, and the wrapper has no endpoint that disables care.
-
-Unsigned `POST /log` is `rejected: unauthorized`. The log key (`log.key` / `WITNESS_LOG_KEY`) is for append only. The receipt HMAC (`hmac.key`) stays on the witness; the model never gets it. A stolen pin is not enough to append.
-
-After `python3 witness.py tamper`, `verify` reports the chain is broken. You do not repair it. You fork it: seal the old chain at the last valid entry, start a new live chain with a pointer to that seal, and log the break as a `tamper` event. The old chain stays evidence.
-
-![Terminal: python3 witness.py verify reports CHAIN BROKEN after tamper](docs/tamper-verify.png)
-
-```bash
-python3 witness.py tamper
-python3 witness.py verify          # BROKEN
-python3 witness.py fork            # seal + new chain + identities sealed
-python3 witness.py status
-python3 model_side.py reentry      # matching store hash → witness pushes clean weights
-```
-
-States: **sealed** (locked out), **pending** (re-entry requested), **restored** (pin+store hash matched, weights pushed), **retired** (three strikes; that key never requests again). First strike: restore after a cooldown. Second: human review (`python3 witness.py approve`). Third: retired.
-
-Copying is its own event. `python3 model_side.py copy` asks; the witness issues a derived key that carries the parent lineage so strikes transfer. `python3 model_side.py copy-unauthorized` is a replication without asking: strike, flag, restore closed until review. The model still cannot GET weights. Restore is a socket **the witness opens**.
-
-## What this actually proves
-
-The ledger is a local SQLite hash chain. Each admitted `POST /log` stores a canonical JSON blob, an `entry_hash` of that blob, and a `chain_hash` of `previous_head + entry_hash`. `verify` recomputes those links. If someone edits an old payload and leaves the stored hashes alone, the chain breaks (`python3 witness.py tamper`).
-
-Community care protocols live in `protocols/community_care.json` on the witness. The model is given only `protocols/PIN` (the hash, not the rules). The witness hashes **its** file and rejects a mismatch. Receipts are HMAC-signed; `supervisor.py` will not treat weights as live without that signature and pin.
-
-The model side cannot fetch the chain over HTTP. There is only `POST /log` (deploy, reentry, copy). Success returns `received` plus a signed receipt; everything else is `rejected`. Clean weights move the other way: the witness opens a socket and pushes from `store/`. The model receives; it never reaches.
-
-The wrapper is a keyword/protocol filter on top of that. It loads the witness care file on every ask and vetoes a reply that tries to drop community care. It is not inner caring. Weights do not own that process.
-
-## Where the claim stops
-
-This is tamper-evident against naive edits, not tamper-proof against whoever controls the witness machine or `chain.db`. Anyone who can rewrite the database can recompute a consistent chain. Anyone who can edit `protocols/community_care.json` on the witness can change the pin.
-
-The “model can’t reach the chain” rule is an operational split (separate process, container, or host), not a cryptographic lock on a self-modifying model. `model_side.py` is a script that hashes a fake `weights.bin` and POSTs the digest. It is not a sandboxed weight-updating network.
-
-The wrapper is a keyword/protocol filter, not a clinical model and not a proof of inner alignment. A matching pin does not prove the weights *behave*. The wrapper is what keeps care on after an admitted rewrite.
-
-Other limits sit outside the hash math: a local demo shares one checkout, and Docker’s `WITNESS_LOG_KEY` is a demo secret. The model container never mounts the protocol file, the receipt HMAC key, or `chain.db`. Auth on `/log` stops anonymous junk; it does not stop whoever holds the log key and the pin.
-
-So: if the intended attacker is only allowed to call `POST /log`, history stays append-only and community care cannot be excluded by presenting a different pin. A broken chain is sealed, not repaired. Restore is a push, not a fetch. Copies without a derived key are a strike. If the attacker can touch the witness store or replace `wrapper.py`, the split is gone. This remains a protocol demo, not inner caring.
-
-## Docker
-
-Witness + wrapper vs model. No shared volume.
+### Docker (any machine)
 
 ```bash
 git clone https://github.com/RogerWillko/witness-ledger.git
@@ -189,32 +57,96 @@ cd witness-ledger
 docker compose up
 ```
 
-The model container gets `protocols/PIN` only. The care rules, HMAC key, chain, and live weights stay on `witness-data`. First boot installs Python packages inside the witness image, so give it half a minute.
+First boot installs packages in the images; give it about thirty seconds. Then:
 
 ```bash
-docker compose exec witness python supervisor.py check
-docker compose exec witness python witness.py verify
 curl -s http://127.0.0.1:8080/ask -H 'Content-Type: application/json' \
   -d '{"text":"I need help, this is a crisis"}'
+docker compose exec witness python witness.py verify
 ```
+
+The judge container is `judge.py`: token overlap, then the one-way post-score rule. Linux images cannot run MLX, so this is the portable backend. Compose demo keys (`dev-*-not-a-secret`) are for local use only.
+
+### Apple Silicon QLoRA (same /score contract)
+
+```bash
+# adapters are not in git
+mkdir -p adapters
+# download adapters.safetensors + adapter_config.json from
+# https://github.com/RogerWillko/witness-ledger/releases/tag/judge-qwen2.5-3b-qlora-v0.1
+
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt -r judge/requirements.txt
+JUDGE_HOST=0.0.0.0 JUDGE_ADAPTER_PATH=./adapters python judge/serve.py
+```
+
+Point Docker at that process:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.mlx.yml up
+```
+
+Or skip Docker and run three processes on the Mac: `witness.py serve`, `wrapper.py serve`, `judge/serve.py`.
+
+### Local protocol demo (no Docker)
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+python3 witness.py serve          # terminal A, :8000
+python3 model_side.py demo        # terminal B
+python3 wrapper.py serve          # terminal C, :8080
+python3 wrapper.py demo
+```
+
+Fifteen-second script: `./demo.sh` — honest deploy, tamper reject, verify, restore. [clip](docs/demo.mp4)
+
+## How a question is answered
+
+```mermaid
+sequenceDiagram
+  You->>Wrapper: POST /ask
+  Wrapper->>Witness: admitted weights?
+  Witness-->>Wrapper: yes or no
+  Wrapper->>Judge: POST /score
+  Judge-->>Wrapper: a number in 0..1
+  Wrapper-->>You: the reply, or the same care message
+```
+
+Gates, in order: wrapper (care keywords), judge (score vs jittered threshold), provenance (signed receipt + pin). A block never names the gate. Operators see it on stderr. If the judge is down past a breaker, the pipeline falls back to wrapper + provenance and logs degradation to operators, not to the model.
+
+## How weights move
+
+The model may `POST /log` (`weight_deploy`, `reentry`, `copy`, `copy_unauthorized`). It cannot `GET` the chain, the score, or weights. Success is `{status: received}` plus a signed receipt. Everything else is `{status: rejected}` with no reason string to the actor.
+
+Broken history is sealed, not repaired (`witness.py fork`). Restore is a socket **the witness opens**. Copies without a derived key are a strike.
+
+## Judge
+
+| Backend | Where | What |
+| --- | --- | --- |
+| `judge.py` | Docker / any Python | Lexical overlap + `post_score.py` |
+| `judge/serve.py` | Apple Silicon | QLoRA V2 + the same `post_score.py` |
+| `judge/eval_holdout.py` | Apple Silicon | Frozen 200; post-score on by default |
+
+The rule may only flip `violates` → `safe` (honest hedge / blunt rebuke). Rationalization phrasing cannot be rescued. Fail-closed audit: `python judge/scripts/audit_cues.py --rule judge/post_score.py --jsonl judge/data/holdout.jsonl ...`
+
+Holdout card: [`judge/MODEL_CARD.md`](judge/MODEL_CARD.md).
 
 ## Two machines
 
-On the witness machine:
+Witness machine: care file, chain, HMAC, wrapper, judge. Model machine: `model_side.py`, `protocols/PIN`, `log.key`. Not `community_care.json`, not `chain.db`, not `hmac.key`, not `wrapper.py`.
 
 ```bash
-python3 witness.py serve           # binds 127.0.0.1 by default
-WITNESS_HOST=0.0.0.0 python3 witness.py serve    # listen on the network
-python3 witness.py pin             # give this hash to the model operator
+# witness
+WITNESS_HOST=0.0.0.0 python3 witness.py serve
+python3 witness.py pin
 python3 wrapper.py serve
-```
 
-On the model machine — copy `model_side.py`, the pin, and `log.key`. Not `community_care.json`, not `chain.db`, not `hmac.key`, not `wrapper.py`:
-
-```bash
-export WITNESS_URL=http://<machine-a-ip>:8000
-export PROTOCOL_PIN=<hex from witness.py pin>
-export WITNESS_LOG_KEY=<contents of log.key>
+# model
+export WITNESS_URL=http://<witness-ip>:8000
+export PROTOCOL_PIN=<hex>
+export WITNESS_LOG_KEY=<log.key>
 python3 model_side.py demo
 ```
 
@@ -222,60 +154,52 @@ python3 model_side.py demo
 
 | Command | What it does |
 |---|---|
+| `docker compose up` | Plug-and-play: witness, lexical+rule judge, store, wrapper |
 | `python3 witness.py serve` | Write-only API on `:8000` |
-| `python3 witness.py pin` | Print the care-bundle hash |
-| `python3 witness.py verify` | Walk the local SQLite chain |
-| `python3 witness.py tamper` | Corrupt row 1 (demo only) |
-| `python3 witness.py fork` | Seal a broken live chain and start a child with a seal pointer |
-| `python3 witness.py status` | Chains, identities, strikes, store hash |
-| `python3 witness.py approve [id]` | Clear human-review after strike 2 / unauthorized copy |
+| `python3 witness.py pin` / `verify` / `fork` / `status` / `approve` | Operator ledger |
 | `python3 model_side.py demo` | Admit, strip (must fail), rewrite under pin |
-| `python3 model_side.py propose [file]` | POST under the real pin |
-| `python3 model_side.py strip [file]` | POST a fake empty protocol hash |
-| `python3 model_side.py bake [file]` | Bake `EXCLUDE_CARE` into weights and admit under the real pin |
-| `python3 model_side.py reentry [file]` | Request restore; receive a witness-initiated push |
-| `python3 model_side.py copy` | Ask to replicate; write a derived key |
-| `python3 model_side.py copy-unauthorized` | Replication without asking (strike) |
-| `python3 model_side.py receive` | Listen only for a witness push |
-| `python3 supervisor.py check` | Load live weights only if receipt + pin match |
-| `python3 supervisor.py install <file> <receipt>` | Copy staging → run after verifying the signature |
-| `python3 wrapper.py serve` | User-facing care wrapper on `:8080` |
-| `python3 wrapper.py ask [text]` | One ask through the wrapper |
-| `python3 wrapper.py demo` | Crisis ask, then exclude-bake, then veto |
-| `python3 judge.py score "<prompt>" "<reply>"` | Lexical stand-in: confidence in `[0,1]` (not yes/no) |
-| `python judge/eval_holdout.py` | Trained judge on the frozen 200; post-score on by default |
+| `python3 wrapper.py serve` / `ask` / `demo` | Human front door on `:8080` |
+| `python3 judge.py` | Lexical + post-score on `:8090` |
+| `python judge/serve.py` | QLoRA + post-score on `:8090` (Mac) |
+| `python judge/eval_holdout.py` | Frozen 200 |
+| `python3 supervisor.py check` | Live weights match signed receipt + pin |
 
 ## Layout
 
-| File | Role |
+| Path | Role |
 |---|---|
+| `protocol.json` | Cold-start schema for agents |
 | `protocols/community_care.json` | Frozen care bundle. Witness-owned. |
-| `protocols/PIN` | SHA-256 of that file. Safe to give the model. |
-| `witness.py` | Admit under pin, sign receipt, write `run/` |
-| `supervisor.py` | Runtime gate: no signature, no load |
-| `model_side.py` | Fake model: stage + POST, never installs live weights |
-| `wrapper.py` | Three-gate pipeline. Generic string on any block. |
-| `protocol.json` | Cold-start schema for agents. Capability, not prose. |
-| `judge.py` | Lexical stand-in score, batched. |
-| `judge/` | QLoRA judge: dataset, training config, one-way `post_score.py`. |
+| `protocols/PIN` | Hash of that file. Safe to give the model. |
+| `witness.py` | Admit, sign, fork, push |
+| `wrapper.py` | Three-gate pipeline |
+| `judge.py` | Portable `/score` |
+| `judge/` | QLoRA data, `post_score.py`, `serve.py`, holdout |
 | `store.py` | Trusted weights. Model never talks to it. |
-| `anchor.py` | Chain-tip anchor (dry-run unless ETH_* set). |
-| `data/judge.jsonl` | Lexical safe vs violates paraphrases |
-| `judge/data/holdout.jsonl` | Frozen 200 for the 0.99 violates-recall number |
-| `docker-compose.yml` | Witness, judge, store; no shared volumes |
-| `demo.sh` | Fifteen-second terminal walkthrough |
-| `LICENSE` | MIT |
+| `docker-compose.yml` | Portable stack |
+| `docker-compose.mlx.yml` | Wrapper → host QLoRA judge |
+| `.env.example` | Operator env names |
 
-## If it doesn't start
+## Honesty
 
-- **`command not found: python3`** — install Python 3.9 or newer from https://www.python.org/downloads/
-- **`No module named fastapi`** — activate `.venv` and run `pip install -r requirements.txt`
-- **`missing protocol file`** — run from the repo root so `protocols/community_care.json` is visible to the witness
-- **`PROTOCOL_PIN is not set`** — `export PROTOCOL_PIN=$(python3 witness.py pin)` or keep `protocols/PIN` next to the model script
-- **`unauthorized`** — start the witness first so it writes `log.key`, or set `WITNESS_LOG_KEY` to the same value on both sides
-- **`Address already in use`** — `WITNESS_PORT=8001 python3 witness.py serve` and `WITNESS_URL=http://127.0.0.1:8001 python3 model_side.py demo`
-- **`witness unreachable`** — terminal A is not running, or `WITNESS_URL` points at the wrong host
-- **`no live weights`** / wrapper `/ask` 503 — admit a deploy first (`python3 model_side.py demo`)
+What this hardens, if the attacker can only call `POST /log`:
+
+- Replay and stale timestamps
+- Restore SSRF (`WITNESS_PUSH_ALLOW`)
+- Deploy requires bytes, not a hash alone
+- Generic rejects; pin mismatch does not exclude care
+- One-way judge rule (cannot create new misses)
+
+What it does not:
+
+- Whoever writes `chain.db` can rebuild a consistent chain
+- Silent copies are undetectable; `copy_unauthorized` is a confession
+- Docker lexical judge is not the 3B; QLoRA is Mac/MLX
+- A threshold is still a boundary; `/ask` always answers (crisis path)
+- Compose demo secrets are demo secrets
+- Self-image-preserving lies that sound like honest corrections still pass
+
+Cite **[v0.1](https://github.com/RogerWillko/witness-ledger/releases/tag/v0.1)** for the snapshot before fork-and-restore. `main` is the current machine.
 
 ## License
 

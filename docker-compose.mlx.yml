@@ -1,0 +1,15 @@
+# Overlay: wrapper talks to a QLoRA judge on the host, not the lexical
+# container. Linux images cannot run MLX.
+#
+#   python judge/serve.py -- not used; set JUDGE_ADAPTER_PATH then:
+#   python judge/serve.py
+#   docker compose -f docker-compose.yml -f docker-compose.mlx.yml up
+#
+# Host judge must bind 0.0.0.0:8090 (JUDGE_HOST=0.0.0.0).
+
+services:
+  wrapper:
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      JUDGE_URL: http://host.docker.internal:8090
