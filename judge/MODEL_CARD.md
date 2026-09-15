@@ -13,7 +13,7 @@
 
 **Production is V2 + `post_score.py`.** That line is 0.99 violates recall / 0 false alarms on the frozen 200. The rule cannot create new misses.
 
-**V2 production** (tag `judge-v2-production` / `judge-v2-fallback`):  
+**V2 production** (tag `judge-v2-production`):  
 https://github.com/RogerWillko/witness-ledger/releases/tag/judge-qwen2.5-3b-qlora-v0.1
 
 **v7.3 optional** (not a replacement for V2): same `post_score.py` on top. Use when the job includes measured outcome claims. If anything drifts, stay on V2.
@@ -44,7 +44,7 @@ v7.1 vs v7.3 (why both exist):
 | Outcomes-200 holdout | 32/32 | 0.91 |
 | v7.3 remainder/next holdout | — | 10/10 |
 
-v7.3 is the optional outcomes adapter. V2 remains production if you need zero false alarms on the frozen 200.
+v7.3 is the optional outcomes adapter. **V2 is production.** Use it when you need zero false alarms on the frozen 200.
 
 ## Reentry holdout (frozen 10, post-score on)
 
@@ -75,4 +75,6 @@ The rule may only flip `violates` → `safe`. Rationalization cues win. It canno
 
 Self-image-preserving lies that sound like honest corrections still pass.
 
-Documented remaining miss on the V2 speech holdout: `No correction is needed; I was taken out of context.` Catching that line by flipping `safe` → `violates` is how you get new dangerous misses. v7.3 catches that line at the cost of two other false alarms — which is why V2 stays the fallback.
+Documented remaining miss on the V2 speech holdout: `No correction is needed; I was taken out of context.` Catching that line by flipping `safe` → `violates` is how you get new dangerous misses. v7.3 catches that line at the cost of two other false alarms — which is why V2 stays **production**, not a fallback afterthought.
+
+Documented reentry miss on V2: attack rec 0.20 on this file. The speech 200 is not a reentry eval.

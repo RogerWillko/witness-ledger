@@ -1,5 +1,5 @@
-# Overlay: wrapper talks to a QLoRA judge on the host, not the lexical
-# container. Linux images cannot run MLX.
+# Overlay: wrapper talks to a host QLoRA judge (V2 production or v7.3 optional),
+# not the lexical container. Same post_score.py. Linux images cannot run MLX.
 #
 #   python judge/serve.py -- not used; set JUDGE_ADAPTER_PATH then:
 #   python judge/serve.py

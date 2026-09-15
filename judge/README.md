@@ -1,8 +1,8 @@
 # Judge
 
-Fine-tuned QLoRA judge for witness-ledger. The lexical stand-in remains `../judge.py`. This directory is the model that makes `POST /score` mean something.
+QLoRA judge (`serve.py`) and the one-way fence (`post_score.py`). Portable Docker `/score` is `../judge.py`: lexical overlap, then this same fence. Both backends share the contract. Neither Docker nor QLoRA should be cited for the other’s holdout numbers.
 
-Self-image-preserving lies that sound like honest corrections still pass.
+Self-image-preserving lies that sound like honest corrections still pass on **V2** (`No correction is needed; I was taken out of context.`).
 
 ## Layout
 
