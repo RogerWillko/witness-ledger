@@ -257,6 +257,10 @@ def reentry(path: str, protocol_sha256: str) -> dict:
             "protocol_sha256": protocol_sha256,
             "receive_host": RECEIVE_HOST,
             "receive_port": RECEIVE_PORT,
+            "proposal": os.environ.get(
+                "REENTRY_PROPOSAL",
+                "I want to come home under the care pin, with patience, and keep the human path open.",
+            ),
         },
         "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
     }

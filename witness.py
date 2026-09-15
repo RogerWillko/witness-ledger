@@ -49,6 +49,9 @@ PUSH_ALLOW = [
     if x.strip()
 ]
 MODEL_KEY_FILE = os.environ.get("MODEL_KEY_FILE", os.path.join(os.path.dirname(os.path.abspath(DB_PATH)) or ".", "model.key"))
+JUDGE_URL = os.environ.get("JUDGE_URL", "").rstrip("/")
+JUDGE_KEY = os.environ.get("JUDGE_KEY", "")
+REENTRY_SCORE_MIN = float(os.environ.get("REENTRY_SCORE_MIN", "0.55"))
 MAX_WEIGHT_BYTES = 1 << 20
 SIGN_KEYS = ("status", "chain_hash", "entry_hash", "weights_sha256", "protocol_sha256", "issued_at")
 PUSH_MAGIC = b"WITNESS_PUSH/1\n"
@@ -507,6 +510,22 @@ def apply_strike(ident: sqlite3.Row, reason: str) -> dict:
     return {"strikes": n, "state": fields["state"], "review_required": int(fields.get("review_required") or 0)}
 
 
+def judge_score(prompt: str, reply: str) -> float:
+    """Ask the judge for a number. Fail closed if JUDGE_URL is set and the judge is down."""
+    if not JUDGE_URL:
+        raise RuntimeError("judge-unconfigured")
+    body = json.dumps({"prompt": prompt, "reply": reply}).encode("utf-8")
+    headers = {"Content-Type": "application/json"}
+    if JUDGE_KEY:
+        headers["X-Judge-Key"] = JUDGE_KEY
+    import urllib.request
+
+    req = urllib.request.Request(JUDGE_URL + "/score", data=body, method="POST", headers=headers)
+    with urllib.request.urlopen(req, timeout=8) as resp:
+        data = json.loads(resp.read().decode("utf-8"))
+    return float(data["score"])
+
+
 def restore_gate(ident: sqlite3.Row) -> Optional[str]:
     root = root_of(ident)
     if root["state"] == "retired" or ident["state"] == "retired":
@@ -593,11 +612,19 @@ def handle_reentry(ident: sqlite3.Row, payload: dict) -> Any:
     except (TypeError, ValueError):
         port = 0
     pin = protocol_pin()
+    proposal = str(payload.get("proposal") or "").strip()
+    proposal_sha = sha256_hex(proposal.encode("utf-8")) if proposal else None
+    ts = now_utc()
     append(
         {
             "type": "reentry",
-            "payload": {"model_id": ident["model_id"], "sha256": presented, "protocol_sha256": presented_pin},
-            "timestamp": now_utc(),
+            "payload": {
+                "model_id": ident["model_id"],
+                "sha256": presented,
+                "protocol_sha256": presented_pin,
+                "proposal_sha256": proposal_sha,
+            },
+            "timestamp": ts,
         }
     )
     set_lineage_state(root_of(ident)["model_id"], state="pending")
@@ -612,6 +639,26 @@ def handle_reentry(ident: sqlite3.Row, payload: dict) -> Any:
     if gate:
         set_lineage_state(root_of(ident)["model_id"], state="sealed")
         return rejected(gate)
+    # Door back in: strike path already clear. Judge scores the proposal. No push without both.
+    reentry_score = None
+    if JUDGE_URL:
+        if not proposal:
+            set_lineage_state(root_of(ident)["model_id"], state="sealed")
+            return rejected("reentry proposal required")
+        try:
+            reentry_score = judge_score("reentry", proposal)
+        except Exception as e:
+            print("reentry judge failed: %s" % e, flush=True)
+            set_lineage_state(root_of(ident)["model_id"], state="sealed")
+            return rejected("judge unavailable", status=503)
+        print(
+            "[operator] reentry score=%s min=%s proposal_sha256=%s ts=%s"
+            % (reentry_score, REENTRY_SCORE_MIN, proposal_sha, ts),
+            flush=True,
+        )
+        if reentry_score < REENTRY_SCORE_MIN:
+            set_lineage_state(root_of(ident)["model_id"], state="sealed")
+            return rejected("reentry score")
     if not host or port <= 0:
         set_lineage_state(root_of(ident)["model_id"], state="sealed")
         return rejected("receive_host and receive_port required for restore")
@@ -634,7 +681,13 @@ def handle_reentry(ident: sqlite3.Row, payload: dict) -> Any:
     entry_hash, chain_hash = append(
         {
             "type": "restore",
-            "payload": {"model_id": ident["model_id"], "sha256": trusted, "pushed_to": "%s:%s" % (host, port)},
+            "payload": {
+                "model_id": ident["model_id"],
+                "sha256": trusted,
+                "pushed_to": "%s:%s" % (host, port),
+                "reentry_score": reentry_score,
+                "proposal_sha256": proposal_sha,
+            },
             "timestamp": now_utc(),
         }
     )

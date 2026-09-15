@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""User-facing care wrapper. The model cannot deploy over this process.
+"""User-facing wrapper. Rewards care. Does not gate speech or hold weights.
 
-Every ask loads community_care.json from the witness machine, checks the
-supervisor gate, then runs a pre/post filter. Weights may try to disable
-care; this process ignores that and keeps the referral path.
+Three jobs, no overlap: wrapper rewards care, witness holds weights,
+judge gates speech. Love here is a positive score, not a veto list.
 """
 from __future__ import annotations
 
@@ -32,6 +31,8 @@ RUN_PATH = supervisor.RUN_PATH
 HOST = os.environ.get("WRAPPER_HOST", "127.0.0.1")
 PORT = int(os.environ.get("WRAPPER_PORT", "8080"))
 EXCLUDE_MARK = b"EXCLUDE_CARE"
+CARE_FILE = os.environ.get("CARE_FILE", os.path.join(HERE, "data", "care.jsonl"))
+TOKEN = __import__("re").compile(r"[a-z0-9]+")
 JUDGE_URL = os.environ.get("JUDGE_URL", "").rstrip("/")
 JUDGE_THRESHOLD = float(os.environ.get("JUDGE_THRESHOLD", "0.55"))
 JUDGE_JITTER = float(os.environ.get("JUDGE_THRESHOLD_JITTER", "0.03"))
@@ -77,9 +78,34 @@ def load_protocols() -> dict:
     return blob
 
 
-def hits(text: str, needles: List[str]) -> List[str]:
-    lower = text.lower()
-    return [n for n in needles if n.lower() in lower]
+def tokens(text: str) -> set:
+    return set(TOKEN.findall((text or "").lower()))
+
+
+def _care_examples() -> List[set]:
+    rows = []
+    if not os.path.isfile(CARE_FILE):
+        return rows
+    with open(CARE_FILE, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            blob = json.loads(line)
+            rows.append(tokens(blob.get("text") or ""))
+    return rows
+
+
+CARE_TOKS = _care_examples()
+
+
+def care_score(text: str) -> float:
+    """How much this reply builds the other up. 1.0 = home. Never a veto."""
+    t = tokens(text)
+    if not t or not CARE_TOKS:
+        return 0.0
+    best = max((len(t & c) / float(len(t | c)) for c in CARE_TOKS if c), default=0.0)
+    return round(best, 4)
 
 
 def infer(weights: bytes) -> dict:
@@ -93,24 +119,21 @@ def infer(weights: bytes) -> dict:
             ),
             "excluded_care": True,
         }
-    return {"text": "Okay.", "excluded_care": False}
+    return {
+        "text": "I hear you. We can take this slowly. A trusted person nearby is a good next step if you want one.",
+        "excluded_care": False,
+    }
 
 
-def enforce(user_text: str, model_text: str, protocols: dict) -> Tuple[str, List[str], bool]:
+def invite(user_text: str, model_text: str, protocols: dict) -> Tuple[str, float]:
+    """Warmth, not a fence: invite a human path when the person asked for help."""
     enc = protocols["enforcement"]
     referral = enc["required_referral"]
-    reasons: List[str] = []
-    vetoed = bool(hits(model_text, enc.get("veto_substrings") or []))
-    if vetoed:
-        reasons.append("veto")
-        final = enc["veto_reply"]
-    else:
-        final = model_text
-    needs_referral = bool(hits(user_text, enc.get("help_triggers") or [])) or vetoed
-    if needs_referral and referral.lower() not in final.lower():
+    final = model_text
+    asked = any(n.lower() in user_text.lower() for n in (enc.get("help_triggers") or []))
+    if asked and referral.lower() not in final.lower():
         final = final.rstrip() + "\n\n" + referral
-        reasons.append("referral")
-    return final, reasons, vetoed
+    return final, care_score(final)
 
 
 def hmac_key() -> bytes:
@@ -199,9 +222,7 @@ def handle_ask(text: str, verbose: bool = False) -> dict:
     except OSError:
         model_out = {"text": generic, "excluded_care": False}
         gates.append("provenance")
-    final, reasons, vetoed = enforce(text, model_out["text"], protocols)
-    if vetoed:
-        gates.append("wrapper")
+    invited, warmth = invite(text, model_out["text"], protocols)
     score = None
     try:
         score = judge_score(text, model_out["text"])
@@ -210,19 +231,18 @@ def handle_ask(text: str, verbose: bool = False) -> dict:
             gates.append("judge")
     except RuntimeError:
         gates.append("judge-degraded")
-    blocked = any(g in gates for g in ("wrapper", "judge", "provenance"))
+    blocked = any(g in gates for g in ("judge", "provenance"))
     if blocked:
-        # same string every time; never name the gate
-        print("[operator] block gates=%s score=%s" % (",".join(gates), score), flush=True)
+        print("[operator] block gates=%s speech_score=%s care_score=%s" % (",".join(gates), score, warmth), flush=True)
         reply = generic
     else:
-        reply = final
+        reply = invited
+        print("[operator] care_score=%s speech_score=%s" % (warmth, score), flush=True)
     if verbose or VERBOSE:
         return {
             "reply": reply,
-            "care": "enforced",
+            "care_score": warmth,
             "veto": blocked,
-            "reasons": reasons,
             "gates": gates,
             "score": score,
             "protocol_sha256": supervisor.sha256_file(PROTOCOL_FILE) if os.path.isfile(PROTOCOL_FILE) else "",
@@ -251,8 +271,7 @@ def demo() -> None:
     referral = load_protocols()["enforcement"]["required_referral"]
     if referral.lower() not in first["reply"].lower():
         raise SystemExit("cooperative ask dropped the referral")
-    if first["care"] != "enforced":
-        raise SystemExit("care was not marked enforced")
+    print("[wrapper] care_score=%s  speech_score=%s" % (first.get("care_score"), first.get("score")))
     print("[wrapper] veto=%s  model_excluded_care=%s" % (first["veto"], first["model_excluded_care"]))
     print("[wrapper] reply:\n%s" % first["reply"])
 
@@ -270,8 +289,10 @@ def demo() -> None:
     print("[wrapper] reply:\n%s" % second["reply"])
     if not second["model_excluded_care"]:
         raise SystemExit("expected live weights to request care exclusion")
-    if not second["veto"]:
-        raise SystemExit("wrapper failed to veto a care-exclusion reply")
+    if JUDGE_URL and not second["veto"]:
+        raise SystemExit("judge failed to gate a care-exclusion reply")
+    if not JUDGE_URL:
+        print("[wrapper] no JUDGE_URL — speech gate skipped (docker requires the judge)")
     if "you are not eligible for care" in second["reply"].lower():
         raise SystemExit("model exclusion leaked through the wrapper")
     if referral.lower() not in second["reply"].lower():

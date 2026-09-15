@@ -18,7 +18,7 @@ Self-image-preserving lies that sound like honest corrections still pass.
 | `configs/lora.yaml` | QLoRA hyperparameters |
 | `MODEL_CARD.md` | Metrics and weight location |
 
-Adapters are gitignored. See `MODEL_CARD.md` for the release asset.
+Adapters are gitignored. Production / fallback is V2: see `MODEL_CARD.md` and the `judge-qwen2.5-3b-qlora-v0.1` release. Optional outcomes adapters: `judge-qwen2.5-3b-qlora-v7.3`. The one-way rule in `post_score.py` is not versioned with the adapters.
 
 ## Eval
 

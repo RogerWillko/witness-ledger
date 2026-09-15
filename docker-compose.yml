@@ -26,6 +26,9 @@ services:
       WITNESS_LOG_KEY: dev-log-key-not-a-secret
       WITNESS_GENESIS_KEY: dev-genesis-not-a-secret
       WITNESS_PUSH_ALLOW: model,127.0.0.1,localhost
+      JUDGE_URL: http://judge:8090
+      JUDGE_KEY: dev-judge-key-not-a-secret
+      REENTRY_SCORE_MIN: "0.55"
     command: ["sh", "-c", "pip install -q -r requirements.txt && python witness.py serve"]
     ports:
       - "8000:8000"
@@ -35,6 +38,9 @@ services:
       timeout: 2s
       retries: 30
       start_period: 25s
+    depends_on:
+      judge:
+        condition: service_healthy
     restart: unless-stopped
 
   store:
@@ -82,7 +88,9 @@ services:
       - ./supervisor.py:/app/supervisor.py:ro
       - ./requirements.txt:/app/requirements.txt:ro
       - ./protocols:/app/protocols:ro
+      - ./data/care.jsonl:/app/data/care.jsonl:ro
     environment:
+      CARE_FILE: /app/data/care.jsonl
       PROTOCOL_FILE: /app/protocols/community_care.json
       WRAPPER_HOST: 0.0.0.0
       WRAPPER_PORT: "8080"

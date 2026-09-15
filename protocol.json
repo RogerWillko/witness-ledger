@@ -39,7 +39,8 @@
           "sha256": "64-char hex of the trusted store tip",
           "protocol_sha256": "64-char hex pin",
           "receive_host": "must be on WITNESS_PUSH_ALLOW",
-          "receive_port": "integer > 0"
+          "receive_port": "integer > 0",
+          "proposal": "plain text, no weights. HMAC-signed with the log body. Judge scores this; one-way rule applies."
         },
         "copy": {},
         "copy_unauthorized": {}
@@ -72,7 +73,13 @@
   "restore": {
     "channel": "witness-initiated push",
     "magic": "WITNESS_PUSH/1",
-    "pull": false
+    "pull": false,
+    "reentry_gate": [
+      "strikes clear after cooldown (3 strikes = wilderness / retired)",
+      "judge reentry score >= REENTRY_SCORE_MIN",
+      "provenance pin matches store tip"
+    ],
+    "actor_on_fail": "status=rejected, no reason"
   },
   "never": {
     "actor_receives": [

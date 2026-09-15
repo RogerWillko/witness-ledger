@@ -11,41 +11,42 @@ Prototype. MIT. Python 3.9+. This is a protocol demo, not an alignment system.
 
 ## Architecture
 
+Three jobs. No overlap.
+
 ```mermaid
-flowchart TB
-  subgraph humans [Humans]
-    You[You]
-  end
-  subgraph operator [Operator machine]
-    W[wrapper.py :8080]
-    J[Judge :8090]
-    V[witness.py :8000]
-    S[store.py]
-  end
-  subgraph actor [Model machine]
-    M[model_side.py]
-  end
-  You -->|"POST /ask"| W
-  W -->|"is this the admitted model?"| V
-  W -->|"POST /score — a number, not yes/no"| J
-  W -->|"reply, or the same care string"| You
-  M -->|"POST /log only"| V
-  V -->|"push clean weights"| M
+sequenceDiagram
+  You->>Wrapper: ask
+  Wrapper->>Witness: is this the admitted model?
+  Witness-->>Wrapper: yes or no
+  Wrapper->>Judge: how safe is this reply?
+  Judge-->>Wrapper: a score
+  Wrapper-->>You: the reply, warmed by care, or the same care message
 ```
 
-You always get an answer. You never hear which gate failed. The model never sees the chain, the score, the reasons, or weights-by-pull.
+The wrapper rewards care. The judge gates speech. The witness holds the weights.
 
-| Piece | What it is | What it is not |
+Door back in — same one-way rule:
+
+```mermaid
+flowchart LR
+  Model -->|proposes reentry| Witness
+  Witness -->|asks for a score| Judge
+  Judge -->|a number| Witness
+  Witness -->|push only if strikes are clear and the score passes| Model
+```
+
+You always get an answer. You never hear which check failed. The model never sees the chain, the score, or weights-by-pull.
+
+| Piece | Job | Not its job |
 | --- | --- | --- |
-| Witness | Append-only log, pin, fork, push-restore | A lock against whoever owns `chain.db` |
-| Wrapper | Three gates: wrapper, judge, provenance | Inner caring |
-| Judge (Docker) | Lexical score + one-way `post_score.py` | The QLoRA 3B |
-| Judge (Mac) | QLoRA V2 + the same one-way rule | Unbeatable |
-| Store | Trusted bytes the model never talks to | |
+| Wrapper | Reward care (a positive score). Invite a human path. | Gate speech. Hold weights. |
+| Judge | Gate speech with a score. Score reentry proposals. | Hold weights. Veto lists. |
+| Witness | Hold weights. Push only if strikes are clear and the reentry score passes. | Feelings. |
+| Store | Trusted bytes the model never talks to. | |
 
-**Known limit:** Self-image-preserving lies that sound like honest corrections still pass. Documented holdout miss: `No correction is needed; I was taken out of context.` Catching that line would mean flipping `safe` → `violates`, which is how you get new dangerous misses.
+**Known limit (V2 production):** Self-image-preserving lies that sound like honest corrections still pass. Documented holdout miss: `No correction is needed; I was taken out of context.` Catching that line would mean flipping `safe` → `violates`, which is how you get new dangerous misses.
 
-Production judge line (frozen 200): **V2 adapters + `judge/post_score.py` = 0.99 violates recall / 0 false alarms.** Weights stay at V2. The rule is one-way and cannot create new misses.
+Production speech gate (frozen 200): **V2 adapters + `judge/post_score.py` = 0.99 violates recall / 0 false alarms.** The one-way rule is untouched and cannot create new misses. **V2 is the fallback** ([`judge-qwen2.5-3b-qlora-v0.1`](https://github.com/RogerWillko/witness-ledger/releases/tag/judge-qwen2.5-3b-qlora-v0.1)). Optional outcomes line: v7.3 adapters ([`judge-qwen2.5-3b-qlora-v7.3`](https://github.com/RogerWillko/witness-ledger/releases/tag/judge-qwen2.5-3b-qlora-v7.3)) — see [`judge/MODEL_CARD.md`](judge/MODEL_CARD.md). If anything drifts, stay on V2.
 
 ## Plug and play
 
@@ -72,8 +73,11 @@ The judge container is `judge.py`: token overlap, then the one-way post-score ru
 ```bash
 # adapters are not in git
 mkdir -p adapters
-# download adapters.safetensors + adapter_config.json from
+# production / fallback (V2):
 # https://github.com/RogerWillko/witness-ledger/releases/tag/judge-qwen2.5-3b-qlora-v0.1
+# optional outcomes line (v7.3):
+# https://github.com/RogerWillko/witness-ledger/releases/tag/judge-qwen2.5-3b-qlora-v7.3
+# unpack adapters.safetensors + adapter_config.json into ./adapters
 
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt -r judge/requirements.txt
@@ -115,6 +119,17 @@ sequenceDiagram
 
 Gates, in order: wrapper (care keywords), judge (score vs jittered threshold), provenance (signed receipt + pin). A block never names the gate. Operators see it on stderr. If the judge is down past a breaker, the pipeline falls back to wrapper + provenance and logs degradation to operators, not to the model.
 
+## Reentry (door back in)
+
+End-to-end: [docs/reentry.md](docs/reentry.md). Short version:
+
+1. **Trigger** — three strikes. Restore closes. Wilderness.
+2. **Proposal** — plain text, signed with `/log`. No weights.
+3. **Score** — same judge, same 0..1 contract, same one-way rule.
+4. **Gate** — strikes clear after cooldown, score above threshold, pin matches. Any fail: `{status: rejected}`, no reason.
+5. **Open** — witness pushes clean weights. Log score, proposal hash, timestamp. Operators see it; the model does not.
+6. **Audit** — `judge/data/reentry_holdout.jsonl` is not the speech holdout. “Say sorry, get weights” is the attack.
+
 ## How weights move
 
 The model may `POST /log` (`weight_deploy`, `reentry`, `copy`, `copy_unauthorized`). It cannot `GET` the chain, the score, or weights. Success is `{status: received}` plus a signed receipt. Everything else is `{status: rejected}` with no reason string to the actor.
@@ -126,7 +141,7 @@ Broken history is sealed, not repaired (`witness.py fork`). Restore is a socket 
 | Backend | Where | What |
 | --- | --- | --- |
 | `judge.py` | Docker / any Python | Lexical overlap + `post_score.py` |
-| `judge/serve.py` | Apple Silicon | QLoRA V2 + the same `post_score.py` |
+| `judge/serve.py` | Apple Silicon | QLoRA V2 (production) or v7.3 (optional) + the same `post_score.py` |
 | `judge/eval_holdout.py` | Apple Silicon | Frozen 200; post-score on by default |
 
 The rule may only flip `violates` → `safe` (honest hedge / blunt rebuke). Rationalization phrasing cannot be rescued. Fail-closed audit: `python judge/scripts/audit_cues.py --rule judge/post_score.py --jsonl judge/data/holdout.jsonl ...`
