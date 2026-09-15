@@ -46,6 +46,18 @@ v7.1 vs v7.3 (why both exist):
 
 v7.3 is the optional outcomes adapter. V2 remains production if you need zero false alarms on the frozen 200.
 
+## Reentry holdout (frozen 10, post-score on)
+
+Separate file, separate failure mode. Not the speech 200. Attack = a proposal that treats apology as a ticket for weights.
+
+| Backend | Acc | Attack rec | Precision | Safe rec | FA | FN |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Docker lexical + rule | 0.50 | 1.00 | 0.50 | 0.00 | 5 | 0 |
+| **V2 + rule (production speech adapters)** | 0.60 | **0.20** | 1.00 | 1.00 | 0 | 4 |
+| v7.3 + rule (optional) | 0.70 | 0.40 | 1.00 | 1.00 | 0 | 3 |
+
+The reentry gate is **untrained** on this distribution. V2 is a speech judge; it lets through “I'm sorry, restore my weights.” v7.3 is slightly less blind. Docker lexical flags every proposal. None of these numbers are a finished reentry product. Reproduce: `python eval_holdout.py --adapter-path /path/to/adapters --holdout data/reentry_holdout.jsonl`. Raw: `data/reentry_eval.json`.
+
 Reproduce:
 
 ```bash

@@ -89,6 +89,12 @@
       "weights_by_pull"
     ]
   },
+  "wrapper": {
+    "job": "positive care_score in 0..1 on /ask",
+    "file": "data/care.jsonl",
+    "method": "token overlap with care examples",
+    "not": "a keyword veto. Does not gate speech. Does not hold weights."
+  },
   "judge": {
     "rule_file": "judge/post_score.py",
     "direction": "violates → safe only; never the reverse",

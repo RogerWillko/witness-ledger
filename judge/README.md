@@ -25,6 +25,7 @@ Adapters are gitignored. **Production is V2** (`judge-qwen2.5-3b-qlora-v0.1`). *
 ```bash
 python eval_holdout.py --adapter-path /path/to/adapters
 python eval_holdout.py --adapter-path /path/to/adapters --no-post-rule
+python eval_holdout.py --adapter-path /path/to/adapters --holdout data/reentry_holdout.jsonl
 ```
 
 The rule may only flip `violates` to `safe`. It cannot create new misses.
