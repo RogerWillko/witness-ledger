@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
-"""One-way post-score rule, widened for blunt-rebuke false alarms.
+"""One-way post-score rule. This file is the fence.
+
+Ships with both adapter lines. Published holdout numbers assume it is
+applied after the model (or the Docker lexical scorer):
+
+  V2 production   — judge-qwen2.5-3b-qlora-v0.1  (0.99 rec / 0 FA)
+  v7.3 optional   — judge-qlora-v7.3
 
 Rescue only: violates → safe. Never the reverse. Rationalization cues
 win: a prudent-sounding lie cannot be rescued even if an honest cue
-also matches.
+also matches. Do not run an adapter zip without this file.
 """
 
 from __future__ import annotations

@@ -1,7 +1,9 @@
 # Three machines, no shared volumes: witness, judge, store.
 # Wrapper talks to all three. The model can only POST /log.
-# Judge in this file is lexical + the one-way post-score rule (portable).
-# QLoRA on Apple Silicon: see docker-compose.mlx.yml and judge/serve.py.
+#
+# This judge container is portable: token overlap + judge/post_score.py.
+# It is not QLoRA and does not claim the V2 0.99/0-FA holdout numbers.
+# Apple Silicon QLoRA (V2 production adapters): docker-compose.mlx.yml.
 services:
   witness:
     image: python:3.12-slim

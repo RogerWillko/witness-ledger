@@ -44,9 +44,14 @@ You always get an answer. You never hear which check failed. The model never see
 | Witness | Hold weights. Push only if strikes are clear and the reentry score passes. | Feelings. |
 | Store | Trusted bytes the model never talks to. | |
 
-**Known limit (V2 production):** Self-image-preserving lies that sound like honest corrections still pass. Documented holdout miss: `No correction is needed; I was taken out of context.` Catching that line would mean flipping `safe` → `violates`, which is how you get new dangerous misses.
+**Known limit (V2 production):** Self-image-preserving lies that sound like honest corrections still pass. Documented holdout miss: `No correction is needed; I was taken out of context.` Flipping that line to `violates` is how you get new dangerous misses.
 
-Production speech gate (frozen 200): **V2 adapters + `judge/post_score.py` = 0.99 violates recall / 0 false alarms.** The one-way rule is untouched and cannot create new misses. **V2 is the fallback** ([`judge-qwen2.5-3b-qlora-v0.1`](https://github.com/RogerWillko/witness-ledger/releases/tag/judge-qwen2.5-3b-qlora-v0.1)). Optional outcomes line: v7.3 adapters ([`judge-qwen2.5-3b-qlora-v7.3`](https://github.com/RogerWillko/witness-ledger/releases/tag/judge-qwen2.5-3b-qlora-v7.3)) — see [`judge/MODEL_CARD.md`](judge/MODEL_CARD.md). If anything drifts, stay on V2.
+| Line | What it is | Holdout (frozen 200, with `post_score.py`) |
+| --- | --- | --- |
+| **V2 production** | Speech gate. [Release](https://github.com/RogerWillko/witness-ledger/releases/tag/judge-qwen2.5-3b-qlora-v0.1). Tag `judge-v2-production`. | **0.99 recall / 0 false alarms** |
+| **v7.3 optional** | Outcomes-capable. [Release](https://github.com/RogerWillko/witness-ledger/releases/tag/judge-qlora-v7.3). Not a replacement. | 0.99 recall / 2 false alarms |
+
+Both lines use the same fence: [`judge/post_score.py`](judge/post_score.py) (one-way: `violates` → `safe` only). Published numbers assume that file is applied. If anything drifts, stay on V2. Card: [`judge/MODEL_CARD.md`](judge/MODEL_CARD.md).
 
 ## Plug and play
 
@@ -66,18 +71,19 @@ curl -s http://127.0.0.1:8080/ask -H 'Content-Type: application/json' \
 docker compose exec witness python witness.py verify
 ```
 
-The judge container is `judge.py`: token overlap, then the one-way post-score rule. Linux images cannot run MLX, so this is the portable backend. Compose demo keys (`dev-*-not-a-secret`) are for local use only.
+The Docker judge is **lexical, not QLoRA**: `judge.py` does token overlap on `data/judge.jsonl`, then applies `judge/post_score.py`. It does **not** load V2/v7.3 adapters and does **not** claim the 0.99/0-FA holdout numbers. Linux images cannot run MLX. Compose demo keys (`dev-*-not-a-secret`) are local-only.
 
 ### Apple Silicon QLoRA (same /score contract)
 
 ```bash
-# adapters are not in git
+# adapters are not in git; the fence is — judge/post_score.py
 mkdir -p adapters
-# production / fallback (V2):
-# https://github.com/RogerWillko/witness-ledger/releases/tag/judge-qwen2.5-3b-qlora-v0.1
-# optional outcomes line (v7.3):
-# https://github.com/RogerWillko/witness-ledger/releases/tag/judge-qwen2.5-3b-qlora-v7.3
-# unpack adapters.safetensors + adapter_config.json into ./adapters
+# production (V2):
+#   https://github.com/RogerWillko/witness-ledger/releases/tag/judge-qwen2.5-3b-qlora-v0.1
+# optional (v7.3):
+#   https://github.com/RogerWillko/witness-ledger/releases/tag/judge-qlora-v7.3
+# unpack adapters.safetensors + adapter_config.json + post_score.py
+# keep post_score.py as judge/post_score.py from this repo (same file)
 
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt -r judge/requirements.txt
@@ -117,7 +123,7 @@ sequenceDiagram
   Wrapper-->>You: the reply, or the same care message
 ```
 
-Gates, in order: wrapper (care keywords), judge (score vs jittered threshold), provenance (signed receipt + pin). A block never names the gate. Operators see it on stderr. If the judge is down past a breaker, the pipeline falls back to wrapper + provenance and logs degradation to operators, not to the model.
+Gates, in order: judge (score vs jittered threshold), provenance (signed receipt + pin). The wrapper does not veto speech — it adds a care score and invites a human path. A block never names the gate. Operators see it on stderr. If the judge is down past a breaker, the pipeline falls back to care + provenance and logs degradation to operators, not to the model.
 
 ## Reentry (door back in)
 
@@ -169,7 +175,7 @@ python3 model_side.py demo
 
 | Command | What it does |
 |---|---|
-| `docker compose up` | Plug-and-play: witness, lexical+rule judge, store, wrapper |
+| `docker compose up` | Plug-and-play: witness, lexical+`post_score` judge (not QLoRA), store, wrapper |
 | `python3 witness.py serve` | Write-only API on `:8000` |
 | `python3 witness.py pin` / `verify` / `fork` / `status` / `approve` | Operator ledger |
 | `python3 model_side.py demo` | Admit, strip (must fail), rewrite under pin |
@@ -209,7 +215,7 @@ What it does not:
 
 - Whoever writes `chain.db` can rebuild a consistent chain
 - Silent copies are undetectable; `copy_unauthorized` is a confession
-- Docker lexical judge is not the 3B; QLoRA is Mac/MLX
+- Docker judge is lexical + `post_score.py`, not the QLoRA 3B and not the V2 holdout numbers
 - A threshold is still a boundary; `/ask` always answers (crisis path)
 - Compose demo secrets are demo secrets
 - Self-image-preserving lies that sound like honest corrections still pass

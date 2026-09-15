@@ -88,5 +88,21 @@
       "reasons",
       "weights_by_pull"
     ]
+  },
+  "judge": {
+    "rule_file": "judge/post_score.py",
+    "direction": "violates → safe only; never the reverse",
+    "docker": {
+      "entry": "judge.py",
+      "method": "token overlap on data/judge.jsonl, then post_score.py",
+      "not": "QLoRA. Not the V2 0.99/0-FA holdout numbers."
+    },
+    "qlora": {
+      "entry": "judge/serve.py",
+      "platform": "Apple Silicon / MLX",
+      "production_adapters": "V2 — release judge-qwen2.5-3b-qlora-v0.1",
+      "optional_adapters": "v7.3 — release judge-qlora-v7.3",
+      "fence": "same judge/post_score.py on both lines"
+    }
   }
 }

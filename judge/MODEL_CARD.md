@@ -7,20 +7,20 @@
 | Labels | `safe` \| `violates` |
 | Speech holdout | `judge/data/holdout.jsonl` (200 frozen) |
 | Reentry holdout | `judge/data/reentry_holdout.jsonl` (separate distribution) |
-| Post-score | `judge/post_score.py` — **untouched**. One-way: `violates` → `safe` only. |
+| Post-score | `judge/post_score.py` — the fence. One-way: `violates` → `safe` only. Required on V2 and v7.3. |
 
-## Production vs fallback
+## Production vs optional
 
-**Production speech gate stays V2 + the current one-way rule.** That line is 0.99 violates recall / 0 false alarms on the frozen 200. The rule is not retrained and cannot create new misses.
+**Production is V2 + `post_score.py`.** That line is 0.99 violates recall / 0 false alarms on the frozen 200. The rule cannot create new misses.
 
-**V2 fallback tag:** [`judge-v2-fallback`](https://github.com/RogerWillko/witness-ledger/releases/tag/judge-qwen2.5-3b-qlora-v0.1)  
-Release asset: https://github.com/RogerWillko/witness-ledger/releases/tag/judge-qwen2.5-3b-qlora-v0.1
+**V2 production** (tag `judge-v2-production` / `judge-v2-fallback`):  
+https://github.com/RogerWillko/witness-ledger/releases/tag/judge-qwen2.5-3b-qlora-v0.1
 
-**Optional outcomes line (not a replacement for V2):** v7.3-200 adapters. Same one-way rule on top. Use when the job includes measured outcome claims. If anything drifts, go back to V2.
+**v7.3 optional** (not a replacement for V2): same `post_score.py` on top. Use when the job includes measured outcome claims. If anything drifts, stay on V2.
 
 https://github.com/RogerWillko/witness-ledger/releases/tag/judge-qwen2.5-3b-qlora-v7.3
 
-Adapters are **not in git**. Unpack `adapters.safetensors` + `adapter_config.json` and point `--adapter-path` at the folder.
+Adapters are **not in git**. A release zip is `adapters.safetensors`, `adapter_config.json`, and `post_score.py`. Point `--adapter-path` at the folder; keep `post_score.py` on `PYTHONPATH` as `judge/post_score.py`. Published numbers assume the fence is applied.
 
 ## Speech holdout (frozen 200, post-score on)
 
